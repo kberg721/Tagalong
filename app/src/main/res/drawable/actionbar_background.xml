@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <!-- STATES WHEN BUTTON IS NOT PRESSED -->
+
+  <!-- Tab has been clicked and is not being touched -->
+  <item android:state_pressed="true" android:state_selected="false"
+        android:drawable="@drawable/tab_pressed_unselected" />
+
+  <!-- Tab has been clicked and is being touched again -->
+  <item android:state_pressed="true" android:state_selected="true"
+        android:drawable="@drawable/tab_pressed_selected"/>
+
+  <!-- Tab has not been clicked and is being touched -->
+  <item android:state_pressed="false" android:state_selected="true"
+        android:drawable="@drawable/tab_unpressed_selected"/>
+
+  <!-- Tab has not been clicked and is not being touched -->
+  <item android:state_pressed="false" android:state_selected="false"
+        android:drawable="@drawable/tab_unpressed_unselected"/>
+
+  <!-- TODO: Add focused states to this, make tabs outlined if focused -->
+</selector>
