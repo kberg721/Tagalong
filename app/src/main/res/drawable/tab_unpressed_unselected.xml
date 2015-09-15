@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+  <!-- Tab background -->
+  <item android:bottom="@dimen/tab_underline_height">
+    <shape android:shape="rectangle" >
+      <solid android:color="@color/tab_unpressed_unselected" />
+    </shape>
+  </item>
+</layer-list>
