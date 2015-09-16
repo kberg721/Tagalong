@@ -32,7 +32,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	protected void onStart() {
 		super.onStart();
 		if(authenticate() == true) {
-			displayUserDetails();
+			Intent mainpageIntent = new Intent(this, Mainpage.class);
+      startActivity(mainpageIntent);
 		}
 	}
 	

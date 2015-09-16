@@ -5,5 +5,5 @@
   <dimen name="app_bar_height">180dp</dimen>
   <dimen name="fab_margin">16dp</dimen>
   <!-- Tab underline dimension -->
-  <dimen name="tab_underline_height">4dp</dimen>
+  <dimen name="tab_underline_height">8dp</dimen>
 </resources>
