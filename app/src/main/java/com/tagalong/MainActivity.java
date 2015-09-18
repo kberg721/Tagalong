@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 	
@@ -27,7 +26,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         
         btnLogout.setOnClickListener(this);
 	}
-	
+
 	@Override
 	protected void onStart() {
 		super.onStart();
