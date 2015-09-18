@@ -54,7 +54,8 @@ public class RegisterActivity extends Activity implements OnClickListener {
                     messageResId = R.string.email_toast;
                 } else if(!password.matches("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$")) {
                     messageResId = R.string.password_toast;
-                } if(messageResId == 0) {
+                }
+				if(messageResId == 0) {
                     User user = new User(name, password, email);
                     registerUser(user);
                 }  else {

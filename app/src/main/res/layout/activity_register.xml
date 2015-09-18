@@ -39,7 +39,6 @@
 	            android:layout_height="50dp"
 	            android:layout_marginBottom="20dip"
 	            android:layout_marginTop="5dip"
-
 	            android:singleLine="true" />
 	        
 	        <TextView
@@ -54,7 +53,6 @@
 	            android:layout_height="50dp"
 	            android:layout_marginBottom="20dip"
 	            android:layout_marginTop="5dip"
-
 	            android:singleLine="true" />
 
 	        <TextView
