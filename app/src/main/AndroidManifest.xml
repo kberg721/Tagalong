@@ -30,6 +30,10 @@
       android:name=".Mainpage"
       android:label="Tagalong">
     </activity>
+    <activity
+      android:name=".NewEvent"
+      android:label="Create New Activity">
+    </activity>
   </application>
 
 </manifest>
