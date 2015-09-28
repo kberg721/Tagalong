@@ -1,0 +1,151 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp"
+                tools:context=".NewEvent">
+  <android.support.v7.widget.Toolbar
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:background="?attr/colorPrimary"
+    android:elevation="6dp"
+    android:minHeight="?attr/actionBarSize"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+  <LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fillViewport="true">
+
+    <ScrollView
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:background="#ffffff">
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:orientation="vertical"
+        android:padding="10dip" >
+
+        <ImageView
+          android:layout_width="200dip"
+          android:layout_height="65dip"
+          android:layout_marginTop="10dip"
+          android:layout_marginBottom="20dip"
+          android:layout_gravity="center"
+          android:src="@drawable/tagalong_logo"
+          android:layout_alignParentTop="true"
+          android:gravity="center"/>
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/event_name"
+          android:textColor="#372c24"
+          android:layout_weight="1"/>
+
+        <EditText
+          android:id="@+id/new_event_name"
+          android:layout_height="35dp"
+          android:layout_marginLeft="15dp"
+          android:layout_marginTop="15dp"
+          android:layout_marginBottom="20dp"
+          android:layout_marginRight="15dp"
+          android:layout_centerVertical="true"
+          android:layout_width="match_parent"
+          android:layout_weight="3"
+          android:ellipsize="start"
+          android:gravity="center"
+          android:hint="Event Name"
+          android:inputType="text"
+          android:background="@drawable/edit_text"/>
+
+        <TextView
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/event_location"
+          android:textColor="#372c24" />
+
+        <EditText
+          android:id="@+id/new_event_location"
+          android:layout_height="35dp"
+          android:layout_marginLeft="15dp"
+          android:layout_marginTop="15dp"
+          android:layout_marginBottom="20dp"
+          android:layout_marginRight="15dp"
+          android:layout_centerVertical="true"
+          android:layout_width="match_parent"
+          android:layout_weight="3"
+          android:ellipsize="start"
+          android:gravity="center"
+          android:hint="Event Location"
+          android:inputType="text"
+          android:background="@drawable/edit_text" />
+
+        <TextView
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/event_time"
+          android:textColor="#372c24" />
+
+        <EditText
+          android:id="@+id/new_event_time"
+          android:layout_height="35dp"
+          android:layout_marginLeft="15dp"
+          android:layout_marginTop="15dp"
+          android:layout_marginBottom="20dp"
+          android:layout_marginRight="15dp"
+          android:layout_centerVertical="true"
+          android:layout_width="match_parent"
+          android:layout_weight="3"
+          android:ellipsize="start"
+          android:gravity="center"
+          android:hint="Event Time"
+          android:inputType="text"
+          android:background="@drawable/edit_text" />
+
+        <TextView
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/invite_input"
+          android:textColor="#372c24" />
+
+        <EditText
+          android:id="@+id/new_event_invite"
+          android:layout_height="35dp"
+          android:layout_marginLeft="15dp"
+          android:layout_marginTop="15dp"
+          android:layout_marginBottom="20dp"
+          android:layout_marginRight="15dp"
+          android:layout_centerVertical="true"
+          android:layout_width="match_parent"
+          android:layout_weight="3"
+          android:ellipsize="start"
+          android:gravity="center"
+          android:hint="Choose Guests"
+          android:inputType="text"
+          android:background="@drawable/edit_text" />
+
+        <Button
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/submit_new_event"
+          android:layout_gravity="center"
+          android:background="@color/colorPrimary"
+          android:textColor="@color/white"
+          android:paddingLeft="@dimen/activity_horizontal_margin"
+          android:paddingRight="@dimen/activity_horizontal_margin"
+          android:layout_marginTop="20dp"/>
+      </LinearLayout>
+    </ScrollView>
+  </LinearLayout>
+</LinearLayout>
