@@ -23,6 +23,10 @@ android {
     }
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
@@ -31,5 +35,5 @@ dependencies {
     compile 'org.apache.httpcomponents:httpmime:4.2.3'
     compile 'org.apache.httpcomponents:httpclient:4.5'
     compile 'org.apache.httpcomponents:httpcore:4.0-alpha6'
-
+    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
 }

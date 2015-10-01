@@ -17,10 +17,14 @@
   <string name="event_time">Time</string>
   <string name="invite_input">Invite Guests</string>
   <string name="submit_new_event">Create Event</string>
+  <string name="facebook_app_id">EKSFmeZRmWlScsj5UHLiaOS21Q4=</string>
 
   <string name="email_toast">Invalid Email Address!</string>
     <string name="password_toast">Passwords must have at least 8 characters, 1 capital letter,
                                   and must include letters and numbers!</string>
   <string name="both_invalid_toast">Either password or email is invalid!</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
