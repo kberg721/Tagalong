@@ -8,9 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
 import android.support.v4.app.Fragment;
 import com.facebook.login.widget.LoginButton;
@@ -36,7 +40,7 @@ public class FacebookLoginFragment extends Fragment {
         loginButton = (LoginButton) view.findViewById(R.id.facebook_login_btn);
         callbackManager = CallbackManager.Factory.create();
 
-        loginButton.setReadPermissions("user_friends");
+        loginButton.setReadPermissions("user_friends", "email", "public_profile");
         // If using in a fragment
         loginButton.setFragment(this);
         // Other app specific specialization
@@ -45,7 +49,17 @@ public class FacebookLoginFragment extends Fragment {
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                System.out.println("success!");
+                new GraphRequest(
+                    loginResult.getAccessToken(),
+                    "/me/friends",
+                    null,
+                    HttpMethod.GET,
+                    new GraphRequest.Callback() {
+                        public void onCompleted(GraphResponse response) {
+                            System.out.println("response: " + response);
+                        }
+                    }
+                ).executeAsync();
             }
 
             @Override
