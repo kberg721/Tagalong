@@ -9,6 +9,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+
 
 public class Mainpage extends AppCompatActivity {
 
@@ -16,6 +18,7 @@ public class Mainpage extends AppCompatActivity {
   ViewPager viewPager;
   UserLocalStore userLocalStore;
   private static final TabsList tabsList = new TabsList();
+  ArrayList<Friend> friendsList;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +29,10 @@ public class Mainpage extends AppCompatActivity {
     //getSupportActionBar().setDisplayUseLogoEnabled(true);
     getSupportActionBar().setIcon(R.drawable.tagalong_icon_small);
     TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+
+    // Get the friends list from login
+    Intent currentIntent = getIntent();
+    friendsList = (ArrayList<Friend>) currentIntent.getSerializableExtra("friendsList");
 
     userLocalStore = new UserLocalStore(this);
 
@@ -61,7 +68,8 @@ public class Mainpage extends AppCompatActivity {
   }
 
   private boolean authenticate() {
-    if (userLocalStore.getLoggedInUser().fullName.equals("")) {
+    boolean loggedIntoFB = getIntent().getBooleanExtra("loginStatus", false);
+    if (userLocalStore.getLoggedInUser().fullName.equals("") && !loggedIntoFB) {
       Intent intent = new Intent(this, LoginActivity.class);
       startActivity(intent);
       return false;
@@ -105,6 +113,7 @@ public class Mainpage extends AppCompatActivity {
       return true;
     } else if (id == R.id.action_newActivity) {
       Intent newEventIntent = new Intent(this, NewEvent.class);
+      newEventIntent.putExtra("friendsList", this.friendsList);
       startActivity(newEventIntent);
       return true;
     }
