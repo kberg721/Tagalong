@@ -12,7 +12,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class NewEvent extends AppCompatActivity implements View.OnClickListener {
+
+  private ArrayList<Friend> friendsList;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +26,9 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener 
     setSupportActionBar(toolbar);
     //getSupportActionBar().setDisplayUseLogoEnabled(true);
     getSupportActionBar().setIcon(R.drawable.tagalong_icon_small);
+    Intent currentIntent = getIntent();
+    friendsList = (ArrayList<Friend>) currentIntent.getSerializableExtra("friendsList");
+    System.out.println("friend list: " + friendsList);
   }
 
   @Override
