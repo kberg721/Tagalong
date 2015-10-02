@@ -17,6 +17,8 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 public class NewEvent extends AppCompatActivity implements View.OnClickListener {
 
   private MultiAutoCompleteTextView multiAutoComplete;

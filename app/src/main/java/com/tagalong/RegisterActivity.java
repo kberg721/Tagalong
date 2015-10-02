@@ -1,7 +1,6 @@
 package com.tagalong;
 
 
-import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -42,10 +41,11 @@ public class RegisterActivity extends Activity implements OnClickListener {
 		switch(arg0.getId()) {
 			case R.id.login_link:
 				// Closing registration screen
-		        // Switching to Login Screen/closing register screen
-		        finish();
+				// Switching to Login Screen/closing register screen
+				finish();
+				break;
 			case R.id.btnRegister:
-                int messageResId = 0; //will be used to make toast
+				int messageResId = 0; //will be used to make toast
 
 				String name = etName.getText().toString();
 				String password = etPassword.getText().toString();
