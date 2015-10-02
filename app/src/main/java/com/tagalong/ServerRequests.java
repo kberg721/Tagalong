@@ -20,12 +20,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 
-public class ServerRequests {
+public class ServerRequests extends Admins {
 	
 	ProgressDialog progressDialog;
 	
 	public static final int CONNECTION_TIMEOUT = 1000 * 15;
-	public static final String SERVER_ADDRESS = "http://kberg721.freeiz.com/";
 	
 	public ServerRequests(Context context) {
 		progressDialog = new ProgressDialog(context);
@@ -65,7 +64,7 @@ public class ServerRequests {
 			HttpConnectionParams.setSoTimeout(httpRequestParam, CONNECTION_TIMEOUT);
 			
 			HttpClient client = new DefaultHttpClient(httpRequestParam);
-			HttpPost post = new HttpPost(SERVER_ADDRESS + "Register.php");
+			HttpPost post = new HttpPost(getRegisterFile());
 			
 			try {
 				post.setEntity(new UrlEncodedFormEntity(dataToSend));
@@ -105,7 +104,7 @@ public class ServerRequests {
 			HttpConnectionParams.setSoTimeout(httpRequestParam, CONNECTION_TIMEOUT);
 			
 			HttpClient client = new DefaultHttpClient(httpRequestParam);
-			HttpPost post = new HttpPost(SERVER_ADDRESS + "FetchUserData.php");
+			HttpPost post = new HttpPost(getFetchUserFile());
 			
 			User returnedUser = null;
 			try {
