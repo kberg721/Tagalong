@@ -1,89 +1,124 @@
-<ScrollView
-  xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="fill_parent"
-  android:layout_height="fill_parent"
-  android:fillViewport="true">
-  
-	<RelativeLayout 
-	    android:layout_width="fill_parent"
-        android:layout_height="wrap_content" 
-        android:background="#ffffff">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+							xmlns:tools="http://schemas.android.com/tools"
+							android:orientation="vertical"
+							android:layout_width="match_parent"
+							android:layout_height="match_parent"
+							android:paddingLeft="0dp"
+							android:paddingRight="0dp"
+							android:paddingTop="0dp"
+							android:paddingBottom="0dp">
 
-	    <LinearLayout
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_marginTop="60dp"
-	        android:orientation="vertical"
-	        android:padding="10dip" >
+	<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:fillViewport="true">
 
-	        <TextView
-	            android:layout_width="fill_parent"
-	            android:layout_height="wrap_content"
-	            android:text="@string/email"
-	            android:textColor="#372c24" />
+		<ScrollView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:background="#ffffff">
 
-	        <EditText
-	           	android:id="@+id/etEmail"
-	            android:layout_width="fill_parent"
-	            android:layout_height="35dp"
-	            android:layout_marginBottom="15dip"
-	            android:layout_marginTop="5dip"
-	            android:singleLine="true" />
-
-	        <TextView
-	            android:layout_width="fill_parent"
-	            android:layout_height="wrap_content"
-	            android:text="@string/password"
-	            android:textColor="#372c24" />
-
-	        <EditText
-	            android:id="@+id/etPassword"
-	            android:layout_width="fill_parent"
-	            android:layout_height="35dp"
-	            android:layout_marginTop="5dip"
-	            android:inputType="textPassword"
-	            android:singleLine="true" />
-	        
-	        <Button 
-	            android:id="@+id/btnLogin"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dip"
-                android:text="@string/Login"/>
-
-			<fragment android:name="com.tagalong.fragments.FacebookLoginFragment"
-				android:id="@+id/facebook_login_fragment"
-				android:layout_width="wrap_content"
+			<LinearLayout
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_gravity="center_horizontal"
 				android:layout_marginTop="0dp"
-				android:layout_marginBottom="0dp"
-				tools:layout="@layout/fragment_facebook_login" />
+				android:orientation="vertical"
+				android:padding="10dip" >
 
-			<TextView
-	            android:id="@+id/link_to_register"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dip"
-                android:layout_marginBottom="40dip"
-                android:text="@string/register"
-                android:gravity="center"
-                android:textSize="15sp"
-                android:textColor="#B924FF"/>
-	    </LinearLayout>
-
-	    <TextView
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_marginTop="30dip"
-	        android:layout_alignParentLeft="true"
-	        android:layout_alignParentTop="true"
-	        android:gravity="center"
-	        android:text="@string/Tagalong"
-	        android:textColor="#372c24"
-	        android:textSize="20sp" />
+				<ImageView
+					android:layout_width="200dip"
+					android:layout_height="65dip"
+					android:layout_marginTop="30dip"
+					android:layout_marginBottom="10dip"
+					android:layout_gravity="center"
+					android:src="@drawable/tagalong_logo"
+					android:layout_alignParentTop="true"
+					android:gravity="center"/>
 
 
-	</RelativeLayout>
-</ScrollView>
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="0dp"
+					android:orientation="vertical"
+					android:padding="10dip" >
+
+					<TextView
+						android:layout_width="fill_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/email"
+						android:textColor="#372c24" />
+
+					<EditText
+						android:id="@+id/etEmail"
+						android:paddingLeft="3dp"
+						android:layout_height="35dp"
+						android:layout_marginLeft="15dp"
+						android:layout_marginTop="15dp"
+						android:layout_marginBottom="20dp"
+						android:layout_marginRight="15dp"
+						android:layout_centerVertical="true"
+						android:layout_width="match_parent"
+						android:layout_weight="3"
+						android:background="@drawable/edit_text"
+						android:singleLine="true" />
+
+					<TextView
+						android:layout_width="fill_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/password"
+						android:textColor="#372c24" />
+
+					<EditText
+						android:id="@+id/etPassword"
+						android:paddingLeft="3dp"
+						android:layout_height="35dp"
+						android:layout_marginLeft="15dp"
+						android:layout_marginTop="15dp"
+						android:layout_marginBottom="20dp"
+						android:layout_marginRight="15dp"
+						android:layout_centerVertical="true"
+						android:layout_width="match_parent"
+						android:layout_weight="3"
+						android:inputType="textPassword"
+						android:background="@drawable/edit_text"
+						android:singleLine="true" />
+
+					<Button
+						android:id="@+id/btnLogin"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="5dip"
+						android:layout_marginBottom="5dip"
+						android:layout_gravity="center"
+						android:background="@color/colorPrimary"
+						android:textColor="@color/white"
+						android:text="@string/Login"/>
+
+					<fragment
+						android:name="com.tagalong.fragments.FacebookLoginFragment"
+						android:id="@+id/facebook_login_fragment"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center_horizontal"
+						android:layout_marginTop="0dp"
+						android:layout_marginBottom="05dp"
+						tools:layout="@layout/fragment_facebook_login" />
+
+					<TextView
+						android:id="@+id/link_to_register"
+						android:layout_width="fill_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="5dip"
+						android:layout_marginBottom="40dip"
+						android:text="@string/register"
+						android:gravity="center"
+						android:textSize="15sp"
+						android:textColor="@color/colorPrimary"/>
+
+	    	</LinearLayout>
+			</LinearLayout>
+		</ScrollView>
+	</LinearLayout>
+</LinearLayout>
