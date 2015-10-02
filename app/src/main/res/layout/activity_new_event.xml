@@ -119,23 +119,26 @@
           android:text="@string/invite_input"
           android:textColor="#372c24" />
 
-        <EditText
-          android:id="@+id/new_event_invite"
+
+        <MultiAutoCompleteTextView
+          android:id="@+id/multiAutoComplete"
           android:layout_height="35dp"
+          android:layout_width="match_parent"
+          android:layout_below="@+id/text2"
+          android:hint="Choose Guests"
+          android:layout_weight="3"
+          android:ellipsize="start"
+          android:gravity="center"
           android:layout_marginLeft="15dp"
           android:layout_marginTop="15dp"
           android:layout_marginBottom="20dp"
           android:layout_marginRight="15dp"
           android:layout_centerVertical="true"
-          android:layout_width="match_parent"
-          android:layout_weight="3"
-          android:ellipsize="start"
-          android:gravity="center"
-          android:hint="Choose Guests"
           android:inputType="text"
           android:background="@drawable/edit_text" />
 
         <Button
+          android:id="@+id/submitNewActivity"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="@string/submit_new_event"
