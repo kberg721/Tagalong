@@ -1,6 +1,5 @@
 package com.tagalong;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,14 +26,14 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 		setContentView(R.layout.activity_login);
 		
 		btnLogin = (Button) findViewById(R.id.btnLogin);
-        registerScreen = (TextView) findViewById(R.id.link_to_register);
-        etPassword = (EditText) findViewById(R.id.etPassword);
-	    etEmail = (EditText) findViewById(R.id.etEmail);
+		registerScreen = (TextView) findViewById(R.id.link_to_register);
+		etPassword = (EditText) findViewById(R.id.etPassword);
+		etEmail = (EditText) findViewById(R.id.etEmail);
 		
-        userLocalStore = new UserLocalStore(this);
+		userLocalStore = new UserLocalStore(this);
         
-        btnLogin.setOnClickListener(this);
-        registerScreen.setOnClickListener(this);
+		btnLogin.setOnClickListener(this);
+		registerScreen.setOnClickListener(this);
 	}
 	
 	
