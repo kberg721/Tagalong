@@ -34,7 +34,8 @@ public class DropdownListAdapter extends BaseAdapter {
   public DropdownListAdapter(Context context, ArrayList<Friend> items,
                              TextView selectedValues) {
     mListItems = new ArrayList<Friend>();
-    mListItems.addAll(items);
+    if (items != null)
+      mListItems.addAll(items);
     mInflater = LayoutInflater.from(context);
     mSelectedItems = selectedValues;
   }

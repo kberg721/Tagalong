@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -33,6 +34,19 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener 
     getSupportActionBar().setIcon(R.drawable.tagalong_icon_small);
     Intent currentIntent = getIntent();
     friendsList = (ArrayList<Friend>) currentIntent.getSerializableExtra("friendsList");
+
+    //onClickListener to initiate the dropDown list
+    Button inviteButton = (Button)findViewById(R.id.inviteButton);
+    inviteButton.setOnClickListener(new View.OnClickListener() {
+      public void onClick(View v) {
+        initiatePopUp(friendsList);
+      }
+    });
+
+
+    }
+
+  private void initiatePopUp(ArrayList<Friend> friendsList) {
     LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context
       .LAYOUT_INFLATER_SERVICE);
     LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.popup_window,
@@ -40,7 +54,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener 
 
     final PopupWindow pw = new PopupWindow(layout, LinearLayout.LayoutParams.MATCH_PARENT,
       LinearLayout.LayoutParams
-      .WRAP_CONTENT, true);
+        .WRAP_CONTENT, true);
 
     //background cannot be null if we want the touch event to be active outside the pop-up window
     pw.setBackgroundDrawable(new BitmapDrawable());
@@ -59,7 +73,8 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener 
     });
 
     pw.setContentView(layout);
-    RelativeLayout inviteLayout = (RelativeLayout) findViewById(R.id.inviteLayout);
+    final RelativeLayout inviteLayout = (RelativeLayout) findViewById(R.id.inviteLayout);
+
     pw.showAsDropDown(inviteLayout);
 
 
@@ -72,7 +87,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener 
 
   }
 
-  @Override
+    @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.menu_new_event, menu);
