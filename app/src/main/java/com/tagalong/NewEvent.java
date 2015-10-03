@@ -2,7 +2,6 @@ package com.tagalong;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -20,18 +19,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 public class NewEvent extends AppCompatActivity implements View.OnClickListener {
 
   private MultiAutoCompleteTextView multiAutoComplete;
-  private ArrayAdapter<Friend> adapter;
+  private ArrayAdapter<String> adapter;
   private ArrayList<Friend> friendsList;
-  private HashSet<String> addedUserIds;
-  HashMap<String, Friend> friendsMap;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +34,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener 
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
     getSupportActionBar().setIcon(R.drawable.tagalong_icon_small);
-    addedUserIds = new HashSet<String>();
+
     this.setupMultiSelect();
   }
 
@@ -61,25 +55,17 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener 
     }
   }
 
-  public Context getContext() {
-    return (Context) this;
-  }
-
-  private HashMap<String, Friend> friendListToMap(ArrayList<Friend> friendsList) {
-    HashMap<String, Friend> friendMap = new HashMap<String, Friend>();
-    for(Friend friend : friendsList) {
-      friendMap.put(friend.getId(), friend);
-    }
-    return friendMap;
-  }
-
   private void setupMultiSelect() {
     Intent currentIntent = getIntent();
     friendsList = (ArrayList<Friend>) currentIntent.getSerializableExtra("friendsList");
-    friendsMap = friendListToMap(friendsList);
+
+    List<String> friendNames = new ArrayList<String>();
+    for (Friend friend : friendsList) {
+      friendNames.add(friend.getName());
+    }
 
     // get the defined string-array
-    adapter = new ArrayAdapter<Friend>(this,android.R.layout.simple_list_item_1, friendsList);
+    adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, friendNames);
     multiAutoComplete = (MultiAutoCompleteTextView) findViewById(R.id.multiAutoComplete);
     // set adapter for the auto complete fields
     multiAutoComplete.setAdapter(adapter);
@@ -90,15 +76,10 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener 
     // when the user clicks an item of the drop-down list
     multiAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
-      public void onItemClick(AdapterView<?> adapterView, View view, int friendPos,
-                              long id) {
-        Friend selectedFriend = (Friend) adapterView.getItemAtPosition(friendPos);
-        addedUserIds.add(selectedFriend.getId());
-        friendsList.remove(friendsMap.get(selectedFriend.getId()));
-        adapter = new ArrayAdapter<Friend>(NewEvent.this, android.R.layout.simple_list_item_1, friendsList);
-        multiAutoComplete.setAdapter(adapter);
+      public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+                              long arg3) {
         Toast.makeText(getBaseContext(), "MultiAutoComplete: " +
-          "you added user " + selectedFriend.getName(),
+          "you add color "+arg0.getItemAtPosition(arg2),
           Toast.LENGTH_LONG).show();
       }
     });
