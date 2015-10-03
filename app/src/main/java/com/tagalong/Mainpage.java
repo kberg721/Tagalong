@@ -9,6 +9,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
+
 import java.util.ArrayList;
 
 
@@ -19,10 +23,13 @@ public class Mainpage extends AppCompatActivity {
   UserLocalStore userLocalStore;
   private static final TabsList tabsList = new TabsList();
   ArrayList<Friend> friendsList;
+  LoginManager facebookLogin;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    FacebookSdk.sdkInitialize(getApplicationContext());
+    facebookLogin = LoginManager.getInstance();
     setContentView(R.layout.activity_mainpage);
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
@@ -68,8 +75,8 @@ public class Mainpage extends AppCompatActivity {
   }
 
   private boolean authenticate() {
-    boolean loggedIntoFB = getIntent().getBooleanExtra("loginStatus", false);
-    if (userLocalStore.getLoggedInUser().fullName.equals("") && !loggedIntoFB) {
+    AccessToken loggedIntoFB = AccessToken.getCurrentAccessToken();
+    if (userLocalStore.getLoggedInUser().fullName.equals("") && loggedIntoFB == null) {
       Intent intent = new Intent(this, LoginActivity.class);
       startActivity(intent);
       return false;
@@ -106,8 +113,13 @@ public class Mainpage extends AppCompatActivity {
     if (id == R.id.action_settings) {
       return super.onOptionsItemSelected(item);
     } else if (id == R.id.action_logout) {
-      userLocalStore.clearUserData();
-      userLocalStore.setUserLoggedIn(false);
+      AccessToken usedFacebook = AccessToken.getCurrentAccessToken();
+      if(usedFacebook != null) {
+        facebookLogin.logOut();
+      } else {
+        userLocalStore.clearUserData();
+        userLocalStore.setUserLoggedIn(false);
+      }
       Intent loginIntent = new Intent(this, LoginActivity.class);
       startActivity(loginIntent);
       return true;
