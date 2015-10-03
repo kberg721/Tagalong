@@ -1,15 +1,20 @@
 package com.tagalong;
 
-import android.app.Activity;
-import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -28,7 +33,43 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener 
     getSupportActionBar().setIcon(R.drawable.tagalong_icon_small);
     Intent currentIntent = getIntent();
     friendsList = (ArrayList<Friend>) currentIntent.getSerializableExtra("friendsList");
-    System.out.println("friend list: " + friendsList);
+    LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context
+      .LAYOUT_INFLATER_SERVICE);
+    LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.popup_window,
+      (ViewGroup) findViewById(R.id.popupView));
+
+    final PopupWindow pw = new PopupWindow(layout, LinearLayout.LayoutParams.MATCH_PARENT,
+      LinearLayout.LayoutParams
+      .WRAP_CONTENT, true);
+
+    //background cannot be null if we want the touch event to be active outside the pop-up window
+    pw.setBackgroundDrawable(new BitmapDrawable());
+    pw.setTouchable(true);
+    //inform pop-up the touch event outside its window
+    pw.setOutsideTouchable(true);
+    //the pop-up will be dismissed if touch event occurs anywhere outside its window
+    pw.setTouchInterceptor(new View.OnTouchListener() {
+      public boolean onTouch(View v, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+          pw.dismiss();
+          return true;
+        }
+        return false;
+      }
+    });
+
+    pw.setContentView(layout);
+    RelativeLayout inviteLayout = (RelativeLayout) findViewById(R.id.inviteLayout);
+    pw.showAsDropDown(inviteLayout);
+
+
+    final ListView list = (ListView) layout.findViewById(R.id.dropdownList);
+    TextView selectedValues = (TextView) layout.findViewById(R.id.selectedValues);
+    DropdownListAdapter adapter = new DropdownListAdapter(this, friendsList, selectedValues);
+    //’items’ is the values’ list and ‘selectedValues’ is the textview where the selected values
+    // are displayed
+    list.setAdapter(adapter);
+
   }
 
   @Override
@@ -41,9 +82,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener 
   @Override
   public void onClick(View v) {
     switch(v.getId()) {
-      case R.id.link_to_register:
-        break;
-      case R.id.btnLogin:
+      case R.id.submitNewEvent:
         break;
       default:
         break;
