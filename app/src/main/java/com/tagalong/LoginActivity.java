@@ -88,7 +88,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 		userLocalStore.storeUserData(returnedUser);
 		userLocalStore.setUserLoggedIn(true);
 		
-		startActivity(new Intent(this, MainActivity.class));
+		startActivity(new Intent(this, Mainpage.class));
 	}
 
 	@Override

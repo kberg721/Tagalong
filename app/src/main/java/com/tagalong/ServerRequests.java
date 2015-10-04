@@ -1,6 +1,10 @@
 package com.tagalong;
 
-import java.util.ArrayList;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.os.AsyncTask;
+
+import com.facebook.AccessToken;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -16,9 +20,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.os.AsyncTask;
+import java.util.ArrayList;
 
 public class ServerRequests extends Admins {
 	
@@ -37,10 +39,20 @@ public class ServerRequests extends Admins {
 		progressDialog.show();
 		new StoreUserDataAsyncTask(user, callback).execute();
 	}
+
+	public void storeEventDataInBackground(Event event, GetEventCallback callback) {
+		progressDialog.show();
+		new StoreEventDataAsyncTask(event, callback).execute();
+	}
 	
 	public void fetchUserDataAsyncTask(User user, GetUserCallback callback) {
-		progressDialog.show();
+		//progressDialog.show();
 		new FetchUserDataAsyncTask(user, callback).execute();
+	}
+
+	public void fetchEventDataAsyncTask(Event event, GetEventCallback callback) {
+		progressDialog.show();
+		new FetchEventDataAsyncTask(event, callback).execute();
 	}
 	
 	public class StoreUserDataAsyncTask extends AsyncTask<Void, Void, Void> {
@@ -83,6 +95,49 @@ public class ServerRequests extends Admins {
 			
 		}
 	}
+
+	public class StoreEventDataAsyncTask extends AsyncTask<Void, Void, Void> {
+		Event event;
+		GetEventCallback eventCallback;
+
+		public StoreEventDataAsyncTask(Event event, GetEventCallback callBack) {
+			this.event = event;
+			this.eventCallback = callBack;
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			ArrayList<NameValuePair> dataToSend = new ArrayList<>();
+			dataToSend.add(new BasicNameValuePair("eventName", event.eventName));
+			dataToSend.add(new BasicNameValuePair("eventLocation", event.eventLocation));
+			dataToSend.add(new BasicNameValuePair("eventTime", event.eventTime));
+			dataToSend.add(new BasicNameValuePair("eventGuestlist", event.guestList));
+
+
+			HttpParams httpRequestParam = new BasicHttpParams();
+			HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);
+			HttpConnectionParams.setSoTimeout(httpRequestParam, CONNECTION_TIMEOUT);
+
+			HttpClient client = new DefaultHttpClient(httpRequestParam);
+			HttpPost post = new HttpPost(getSubmitEventFile());
+
+			try {
+				post.setEntity(new UrlEncodedFormEntity(dataToSend));
+				client.execute(post);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void aVoid) {
+			progressDialog.dismiss();
+			eventCallback.done(null);
+			super.onPostExecute(aVoid);
+
+		}
+	}
 	
 	public class FetchUserDataAsyncTask extends AsyncTask<Void, Void, User> {
 		User user;
@@ -92,12 +147,15 @@ public class ServerRequests extends Admins {
 			this.user = user;
 			this.userCallback = callBack;
 		}
-		
+
 		@Override
 		protected User doInBackground(Void... params) {
 			ArrayList<NameValuePair> dataToSend = new ArrayList<>();
 			dataToSend.add(new BasicNameValuePair("email", user.email));
-			dataToSend.add(new BasicNameValuePair("password", user.password));
+			AccessToken isFBUser = AccessToken.getCurrentAccessToken();
+			if(isFBUser == null) {
+				dataToSend.add(new BasicNameValuePair("password", user.password));
+			}
 			
 			HttpParams httpRequestParam = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);
@@ -119,8 +177,12 @@ public class ServerRequests extends Admins {
 					user = null;
 				} else {
 					String name = jObject.getString("name");
-					
-					returnedUser = new User(name, user.password, user.email);
+
+					if(isFBUser != null) {
+						returnedUser = new User(name, "", user.email);
+					} else {
+						returnedUser = new User(name, user.password, user.email);
+					}
 				}
 				
 			} catch(Exception e) {
@@ -136,4 +198,60 @@ public class ServerRequests extends Admins {
 			super.onPostExecute(returnedUser);
 		}
 	}
+
+	public class FetchEventDataAsyncTask extends AsyncTask<Void, Void, Event> {
+		Event event;
+		GetEventCallback eventCallback;
+
+		public FetchEventDataAsyncTask(Event event, GetEventCallback callBack) {
+			this.event = event;
+			this.eventCallback = callBack;
+		}
+
+		@Override
+		protected Event doInBackground(Void... params) {
+			ArrayList<NameValuePair> dataToSend = new ArrayList<>();
+			dataToSend.add(new BasicNameValuePair("eventName", event.eventName));
+			dataToSend.add(new BasicNameValuePair("eventLocation", event.eventLocation));
+			dataToSend.add(new BasicNameValuePair("eventTime", event.eventTime));
+			dataToSend.add(new BasicNameValuePair("eventGuestlist", event.guestList));
+
+			HttpParams httpRequestParam = new BasicHttpParams();
+			HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);
+			HttpConnectionParams.setSoTimeout(httpRequestParam, CONNECTION_TIMEOUT);
+
+			HttpClient client = new DefaultHttpClient(httpRequestParam);
+			HttpPost post = new HttpPost(getFetchEventFile());
+
+			Event returnedEvent = null;
+			try {
+				post.setEntity(new UrlEncodedFormEntity(dataToSend));
+				HttpResponse httpResponse = client.execute(post);
+
+				HttpEntity entity = httpResponse.getEntity();
+				String result = EntityUtils.toString(entity);
+				JSONObject jObject = new JSONObject(result);
+
+				if(jObject.length() == 0) {
+					event = null;
+				} else {
+					String name = jObject.getString("name");
+
+					returnedEvent = new Event(name, event.eventLocation, event.eventTime, event.guestList);
+				}
+
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+
+			return returnedEvent;
+		}
+
+		protected void onPostExecute(Event returnedEvent) {
+			progressDialog.dismiss();
+			eventCallback.done(returnedEvent);
+			super.onPostExecute(returnedEvent);
+		}
+	}
+
 }
