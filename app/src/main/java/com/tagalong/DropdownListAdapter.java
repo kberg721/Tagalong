@@ -46,6 +46,16 @@ public class DropdownListAdapter extends BaseAdapter {
    return Long.valueOf(idString).longValue();
   }
 
+  public ArrayList<Friend> getSelectedFriends() {
+    ArrayList<Friend> selectedFriends = new ArrayList<Friend>();
+    for(Friend friend : mListItems) {
+      if (friend.isSelected()) {
+        selectedFriends.add(friend);
+      }
+    }
+    return selectedFriends;
+  }
+
   @Override
   public int getCount() {
     return mListItems.size();
@@ -114,7 +124,7 @@ public class DropdownListAdapter extends BaseAdapter {
 
     if (selectedCount == 0) {
       mSelectedItems.setText(R.string.invite_input);
-    } else if (selectedCount >= 1) {
+    } else {
       for (int i = 0; i < mListItems.size(); i++) {
         if (isCheckedAtPosition(i)) {
           firstSelected = mListItems.get(i).getName();

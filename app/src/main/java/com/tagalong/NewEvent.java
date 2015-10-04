@@ -18,11 +18,13 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class NewEvent extends AppCompatActivity implements View.OnClickListener {
 
   private ArrayList<Friend> friendsList;
+  DropdownListAdapter dropdownListAdapter;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +45,13 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener 
       }
     });
 
-
-    }
+    Button submitButton = (Button) findViewById(R.id.submitNewEvent);
+    submitButton.setOnClickListener(new View.OnClickListener() {
+      public void onClick(View v) {
+        submitEvent();
+      }
+    });
+  }
 
   private void initiatePopUp(ArrayList<Friend> friendsList) {
     LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context
@@ -79,11 +86,12 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener 
 
 
     final ListView list = (ListView) layout.findViewById(R.id.dropdownList);
-    TextView selectedValues = (TextView) layout.findViewById(R.id.selectedValues);
-    DropdownListAdapter adapter = new DropdownListAdapter(this, friendsList, selectedValues);
+    TextView selectedValues = (TextView) findViewById(R.id.selectedValues);
+
+    dropdownListAdapter = new DropdownListAdapter(this, friendsList, selectedValues);
     //’items’ is the values’ list and ‘selectedValues’ is the textview where the selected values
     // are displayed
-    list.setAdapter(adapter);
+    list.setAdapter(dropdownListAdapter);
 
   }
 
@@ -94,11 +102,17 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener 
     return true;
   }
 
+  public void submitEvent() {
+    // TODO: extract other fields from the form
+    String eventName = null;
+    String eventLocation = null;
+    String eventTime = null;
+    ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
+  }
+
   @Override
   public void onClick(View v) {
     switch(v.getId()) {
-      case R.id.submitNewEvent:
-        break;
       default:
         break;
     }
