@@ -6,7 +6,9 @@
   android:orientation="vertical" >
 
   <ListView android:id="@+id/dropdownList"
-    android:layout_width="fill_parent"
+    android:layout_width="315dp"
+    android:layout_gravity="center_horizontal"
+    android:layout_marginLeft="0dp"
     android:layout_height="wrap_content">
   </ListView>
 </LinearLayout>

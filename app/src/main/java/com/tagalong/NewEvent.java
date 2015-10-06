@@ -18,7 +18,6 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class NewEvent extends AppCompatActivity implements View.OnClickListener {
@@ -71,7 +70,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener 
     //the pop-up will be dismissed if touch event occurs anywhere outside its window
     pw.setTouchInterceptor(new View.OnTouchListener() {
       public boolean onTouch(View v, MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
           pw.dismiss();
           return true;
         }
