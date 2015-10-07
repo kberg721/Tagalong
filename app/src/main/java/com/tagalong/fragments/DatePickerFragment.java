@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.widget.DatePicker;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 /**
  * Created by Kberg721 on 10/6/15.
@@ -19,7 +18,7 @@ public class DatePickerFragment extends DialogFragment
   OnDateSelectedListener mCallback;
 
   public interface OnDateSelectedListener {
-    public GregorianCalendar onDateSelected(int year, int month, int day);
+    public void onDateSelected(int year, int month, int day);
   }
 
   @Override

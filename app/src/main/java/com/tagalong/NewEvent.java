@@ -6,23 +6,24 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import com.tagalong.fragments.DatePickerFragment;
 import com.tagalong.fragments.TimePickerFragment;
+
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 
 public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   DatePickerFragment.OnDateSelectedListener, TimePickerFragment.OnTimeSelectedListener {
 
   private ArrayList<Friend> friendsList;
   Button btnCreateEvent;
-  EditText new_event_name, new_event_time, new_event_location, new_event_invite;
+  EditText new_event_name, new_event_location, new_event_invite;
+  TagalongDate eventTime;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +36,12 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     Intent currentIntent = getIntent();
     friendsList = (ArrayList<Friend>) currentIntent.getSerializableExtra("friendsList");
     System.out.println("friend list: " + friendsList);
+    eventTime = new TagalongDate();
 
     btnCreateEvent = (Button) findViewById(R.id.btnCreateEvent);
     new_event_invite = (EditText) findViewById(R.id.new_event_invite);
     new_event_name = (EditText) findViewById(R.id.new_event_name);
     new_event_location = (EditText) findViewById(R.id.new_event_location);
-    new_event_time = (EditText) findViewById(R.id.new_event_time);
   }
 
   @Override
@@ -53,22 +54,21 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   @Override
   public void onClick(View v) {
     switch(v.getId()) {
-      case R.id.link_to_register:
-        break;
       case R.id.btnCreateEvent:
         /* TODO: add validation for event form
          *
          */
         int messageResId = 0; //will be used to make toast
+        //create the event
+
         String eventName = new_event_name.getText().toString();
-        String eventTime = new_event_time.getText().toString();
         String eventLocation = new_event_location.getText().toString();
         String eventGuestList = new_event_invite.getText().toString();
-        if(eventGuestList == "" || eventTime == "" || eventName == "" || eventLocation == "") {
+        if(eventGuestList == "" || eventName == "" || eventLocation == "" || !isTimeSet()) {
           messageResId = R.string.missing_event_field;
         }
         if(messageResId == 0) {
-          Event event = new Event(eventName, eventLocation, eventTime, eventGuestList);
+          Event event = new Event(eventName, eventLocation, eventTime.toString(), eventGuestList);
           submitEvent(event);
         } else {
           Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
@@ -91,13 +91,12 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
       
   public void showTimePickerDialog(View v) {
     DialogFragment newFragment = new TimePickerFragment();
-    newFragment.show(getFragmentManager(),"timePicker");
+    newFragment.show(getFragmentManager(), "timePicker");
   }
 
-  public GregorianCalendar onTimeSelected(int hours, int minutes) {
-    GregorianCalendar timeSelected = new GregorianCalendar(0, 0, 0, hours, minutes);
-    Log.d("time created", timeSelected.toString());
-    return timeSelected;
+  public void onTimeSelected(int hours, int minutes) {
+    eventTime.setmHour(hours);
+    eventTime.setmMinute(minutes);
   }
 
   public void showDatePickerDialog(View v) {
@@ -105,9 +104,15 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     newFragment.show(getFragmentManager(), "datePicker");
   }
 
-  public GregorianCalendar onDateSelected(int year, int month, int day) {
-    GregorianCalendar dateSelected = new GregorianCalendar(year, month, day);
-    Log.d("date created", dateSelected.toString());
-    return dateSelected;
+  public void onDateSelected(int year, int month, int day) {
+    eventTime.setmYear(year);
+    eventTime.setmMonth(month);
+    eventTime.setmDay(day);
+  }
+
+  //Determines whether the event time has been set
+  public boolean isTimeSet() {
+    return !(eventTime.getmDay() == 0 || eventTime.getmMonth() == 0 || eventTime.getmYear() == 0 ||
+      eventTime.getmHour() == 0 || eventTime.getmMinute() == 0);
   }
 }

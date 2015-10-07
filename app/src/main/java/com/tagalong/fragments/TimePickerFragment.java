@@ -9,7 +9,6 @@ import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 /**
  * Created by Kberg721 on 10/6/15.
@@ -20,7 +19,7 @@ public class TimePickerFragment extends DialogFragment
   OnTimeSelectedListener mCallback;
 
   public interface OnTimeSelectedListener {
-    public GregorianCalendar onTimeSelected(int hour, int minutes);
+    public void onTimeSelected(int hour, int minutes);
   }
 
   @Override
