@@ -11,5 +11,5 @@
 
 	mysqli_stmt_close($statement);
 
-	msqli_close($con);
+	mysqli_close($con);
 ?>

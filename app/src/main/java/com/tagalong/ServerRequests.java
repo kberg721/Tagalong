@@ -174,7 +174,7 @@ public class ServerRequests extends Admins {
 				JSONObject jObject = new JSONObject(result);
 				
 				if(jObject.length() == 0) {
-					user = null;
+					returnedUser = null;
 				} else {
 					String name = jObject.getString("name");
 

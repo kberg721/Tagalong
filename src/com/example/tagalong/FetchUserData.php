@@ -1,8 +1,12 @@
 <?php
 	$con = mysqli_connect("mysql15.000webhost.com", "a4232919_kberg72", "Darkside721", "a4232919_User");
 
-	$password = $_POST["password"];
-	$email = $_POST["email"];
+	if (mysqli_connect_errno()) {
+    echo "Failed to connect to MySQL: " . mysqli_connect_error();
+  }
+
+	$password = mysqli_real_escape_string($con, $_POST["password"]);
+	$email = mysqli_real_escape_string($con, $_POST["email"]);
 
 	$statement = mysqli_prepare($con, "SELECT * FROM User WHERE email = ? AND password = ?");
 	mysqli_stmt_bind_param($statement, "ss", $email, $password);
@@ -18,8 +22,12 @@
 		$user[name] = $name;
 		$user[password] = $password;
 	}
-
-	echo json_encode($user);
+	
+	if (count($user) == 0) {
+	  echo json_encode (new stdClass);
+	} else {
+	  echo json_encode($user);
+	}
 
 	mysqli_stmt_close($statement);
 
