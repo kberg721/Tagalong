@@ -1,15 +1,24 @@
 package com.tagalong;
 
-
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tagalong.fragments.DatePickerFragment;
@@ -24,6 +33,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   Button btnCreateEvent;
   EditText new_event_name, new_event_location, new_event_invite;
   TagalongDate eventTime;
+  DropdownListAdapter dropdownListAdapter;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -38,13 +48,62 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     System.out.println("friend list: " + friendsList);
     eventTime = new TagalongDate();
 
-    btnCreateEvent = (Button) findViewById(R.id.btnCreateEvent);
-    new_event_invite = (EditText) findViewById(R.id.new_event_invite);
+    btnCreateEvent = (Button) findViewById(R.id.submitNewEvent);
     new_event_name = (EditText) findViewById(R.id.new_event_name);
     new_event_location = (EditText) findViewById(R.id.new_event_location);
+
+    //onClickListener to initiate the dropDown list
+    Button inviteButton = (Button)findViewById(R.id.inviteButton);
+    inviteButton.setOnClickListener(new View.OnClickListener() {
+      public void onClick(View v) {
+        initiatePopUp(friendsList);
+      }
+    });
   }
 
-  @Override
+  private void initiatePopUp(ArrayList<Friend> friendsList) {
+    LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context
+      .LAYOUT_INFLATER_SERVICE);
+    LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.popup_window,
+      (ViewGroup) findViewById(R.id.popupView));
+
+    final PopupWindow pw = new PopupWindow(layout, LinearLayout.LayoutParams.MATCH_PARENT,
+      LinearLayout.LayoutParams
+        .WRAP_CONTENT, true);
+
+    //background cannot be null if we want the touch event to be active outside the pop-up window
+    pw.setBackgroundDrawable(new BitmapDrawable());
+    pw.setTouchable(true);
+    //inform pop-up the touch event outside its window
+    pw.setOutsideTouchable(true);
+    //the pop-up will be dismissed if touch event occurs anywhere outside its window
+    pw.setTouchInterceptor(new View.OnTouchListener() {
+      public boolean onTouch(View v, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+          pw.dismiss();
+          return true;
+        }
+        return false;
+      }
+    });
+
+    pw.setContentView(layout);
+    final RelativeLayout inviteLayout = (RelativeLayout) findViewById(R.id.inviteLayout);
+
+    pw.showAsDropDown(inviteLayout);
+
+
+    final ListView list = (ListView) layout.findViewById(R.id.dropdownList);
+    TextView selectedValues = (TextView) findViewById(R.id.selectedValues);
+
+    dropdownListAdapter = new DropdownListAdapter(this, friendsList, selectedValues);
+    //’items’ is the values’ list and ‘selectedValues’ is the textview where the selected values
+    // are displayed
+    list.setAdapter(dropdownListAdapter);
+
+  }
+
+    @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.menu_new_event, menu);
@@ -54,13 +113,12 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   @Override
   public void onClick(View v) {
     switch(v.getId()) {
-      case R.id.btnCreateEvent:
+      case R.id.submitNewEvent:
         /* TODO: add validation for event form
          *
          */
         int messageResId = 0; //will be used to make toast
-        //create the event
-
+        ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
         String eventName = new_event_name.getText().toString();
         String eventLocation = new_event_location.getText().toString();
         String eventGuestList = new_event_invite.getText().toString();
