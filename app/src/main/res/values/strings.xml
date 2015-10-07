@@ -18,6 +18,7 @@
   <string name="invite_input">Invite Guests</string>
   <string name="submit_new_event">Create Event</string>
   <string name="facebook_app_id">1779316108962161</string>
+  <string name="event_description">Event Description</string>
 
   <string name="email_toast">Invalid Email Address!</string>
     <string name="password_toast">Passwords must have at least 8 characters, 1 capital letter,
