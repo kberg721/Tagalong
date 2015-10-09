@@ -3,14 +3,10 @@ package com.tagalong;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -47,21 +43,21 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   DatePickerFragment.OnDateSelectedListener, TimePickerFragment.OnTimeSelectedListener,
   GoogleApiClient.OnConnectionFailedListener {
 
+  private static final String TAG = "Tagalong";
+  private EditText new_event_name;
+  private TagalongDate eventTime;
+  private Button submitNewEvent;
+
+  //Used for Event Guest List
   private ArrayList<Friend> friendsList;
-  Button submitNewEvent;
-  EditText new_event_name, new_event_location, new_event_invite;
-  TagalongDate eventTime;
+  private DropdownListAdapter dropdownListAdapter;
+
+  //Used for Event Location
   private AutoCompleteTextView mAutocompleteView;
   private GoogleApiClient mGoogleApiClient;
   private PlaceAutoCompleteAdapter mAdapter;
-  private TextView mPlaceDetailsText;
-  private TextView mPlaceDetailsAttribution;
-  private static final String TAG = "TagalongPlaces";
-  private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
-    new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
-
-  DropdownListAdapter dropdownListAdapter;
-
+  private static final LatLngBounds BOUNDS_GREATER_SEATTLE = new LatLngBounds(
+    new LatLng(47.498833, -122.381676), new LatLng(47.782455, -122.243813));
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -71,28 +67,11 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     setSupportActionBar(toolbar);
     //getSupportActionBar().setDisplayUseLogoEnabled(true);
     getSupportActionBar().setIcon(R.drawable.tagalong_icon_small);
+
+    //Event Guest List Initializations
     Intent currentIntent = getIntent();
     friendsList = (ArrayList<Friend>) currentIntent.getSerializableExtra("friendsList");
-
     System.out.println("friend list: " + friendsList);
-    eventTime = new TagalongDate();
-
-    mAutocompleteView = (AutoCompleteTextView) findViewById(R.id.autocomplete_places);
-    mGoogleApiClient = new GoogleApiClient
-      .Builder(this)
-      .addApi(Places.GEO_DATA_API)
-      .addOnConnectionFailedListener(this)
-      .build();
-
-    mPlaceDetailsText = (TextView) findViewById(R.id.place_details);
-    mPlaceDetailsAttribution = (TextView) findViewById(R.id.place_attribution);
-
-    mAdapter = new PlaceAutoCompleteAdapter(this, mGoogleApiClient, BOUNDS_GREATER_SYDNEY,
-      null);
-    mAutocompleteView.setAdapter(mAdapter);
-
-    submitNewEvent = (Button) findViewById(R.id.submitNewEvent);
-    new_event_name = (EditText) findViewById(R.id.new_event_name);
 
     //onClickListener to initiate the dropDown list
     Button inviteButton = (Button)findViewById(R.id.inviteButton);
@@ -102,22 +81,34 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
       }
     });
 
+    //Event Location
+    mAutocompleteView = (AutoCompleteTextView) findViewById(R.id.autocomplete_places);
+    mGoogleApiClient = new GoogleApiClient
+      .Builder(this)
+      .addApi(Places.GEO_DATA_API)
+      .addOnConnectionFailedListener(this)
+      .build();
+    mAdapter = new PlaceAutoCompleteAdapter(this, mGoogleApiClient, BOUNDS_GREATER_SEATTLE,
+      null);
+    mAutocompleteView.setAdapter(mAdapter);
     mAutocompleteView.setOnItemClickListener(mAutocompleteClickListener);
+
+    eventTime = new TagalongDate();
+    new_event_name = (EditText) findViewById(R.id.new_event_name);
+    submitNewEvent = (Button) findViewById(R.id.submitNewEvent);
     submitNewEvent.setOnClickListener(this);
   }
 
   @Override
-  protected void onStart() {
-    super.onStart();
-    mGoogleApiClient.connect();
+  public boolean onCreateOptionsMenu(Menu menu) {
+    // Inflate the menu; this adds items to the action bar if it is present.
+    getMenuInflater().inflate(R.menu.menu_new_event, menu);
+    return true;
   }
 
-  @Override
-  protected void onStop() {
-    mGoogleApiClient.disconnect();
-    super.onStop();
-  }
-
+  /* This section deals with the code that will initialize the drop down menu
+     containing all of the user's friends.
+   */
   private void initiatePopUp(ArrayList<Friend> friendsList) {
     LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context
       .LAYOUT_INFLATER_SERVICE);
@@ -137,7 +128,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     pw.setTouchInterceptor(new View.OnTouchListener() {
       public boolean onTouch(View v, MotionEvent event) {
 
-        if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
           pw.dismiss();
           return true;
         }
@@ -161,59 +152,9 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
 
   }
 
-    @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_new_event, menu);
-    return true;
-  }
-
-  public void submitEvent() {
-    // TODO: extract other fields from the form
-    String eventName = null;
-    String eventLocation = null;
-    String eventTime = null;
-    ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
-  }
-
-  @Override
-  public void onClick(View v) {
-    switch(v.getId()) {
-      case R.id.submitNewEvent:
-        /* TODO: add validation for event form
-         *
-         */
-        int messageResId = 0; //will be used to make toast
-        ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
-        String eventName = new_event_name.getText().toString();
-        String eventGuestList = new_event_invite.getText().toString();
-        if(invitedFriends.size() == 0 || eventName == "" || !isTimeSet()) {
-          messageResId = R.string.missing_event_field;
-        }
-        if(messageResId == 0) {
-          /*TODO: Parse invitedFriends into eventGuestList
-           */
-          Event event = new Event(eventName, "", eventTime.toString(), eventGuestList);
-          submitEvent(event);
-        } else {
-          Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
-        }
-        break;
-      default:
-        break;
-    }
-  }
-
-  private void submitEvent(Event event) {
-    ServerRequests serverRequest = new ServerRequests(this);
-    serverRequest.storeEventDataInBackground(event, new GetEventCallback() {
-      @Override
-      public void done(Event returnedEvent) {
-        finish();
-      }
-    });
-  }
-      
+  /*  The following code supports the Time and Date widgets
+      to enable the user to set the event time.
+   */
   public void showTimePickerDialog(View v) {
     DialogFragment newFragment = new TimePickerFragment();
     newFragment.show(getFragmentManager(), "timePicker");
@@ -241,6 +182,21 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
       eventTime.getmHour() == 0 || eventTime.getmMinute() == 0);
   }
 
+  /* The following methods and declarations support the Event Location functionality,
+     making calls to the Google Places API with the use of a PlaceAutoCompleteAdapter
+   */
+  @Override
+  protected void onStart() {
+    super.onStart();
+    mGoogleApiClient.connect();
+  }
+
+  @Override
+  protected void onStop() {
+    mGoogleApiClient.disconnect();
+    super.onStop();
+  }
+
   private AdapterView.OnItemClickListener mAutocompleteClickListener
     = new AdapterView.OnItemClickListener() {
     @Override
@@ -249,7 +205,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
              Retrieve the place ID of the selected item from the Adapter.
              The adapter stores each Place suggestion in a AutocompletePrediction from which we
              read the place ID and title.
-              */
+            */
       final AutocompletePrediction item = mAdapter.getItem(position);
       final String placeId = item.getPlaceId();
       final CharSequence primaryText = item.getPrimaryText(null);
@@ -264,8 +220,6 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
         .getPlaceById(mGoogleApiClient, placeId);
       placeResult.setResultCallback(mUpdatePlaceDetailsCallback);
 
-      Toast.makeText(getApplicationContext(), "Clicked: " + primaryText,
-        Toast.LENGTH_SHORT).show();
       Log.i(TAG, "Called getPlaceById to get Place details for " + placeId);
     }
   };
@@ -283,34 +237,11 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
       // Get the Place object from the buffer.
       final Place place = places.get(0);
 
-      // Format details of the place for display and show it in a TextView.
-      mPlaceDetailsText.setText(formatPlaceDetails(getResources(), place.getName(),
-        place.getId(), place.getAddress(), place.getPhoneNumber(),
-        place.getWebsiteUri()));
-
-      // Display the third party attributions if set.
-      final CharSequence thirdPartyAttribution = places.getAttributions();
-      if (thirdPartyAttribution == null) {
-        mPlaceDetailsAttribution.setVisibility(View.GONE);
-      } else {
-        mPlaceDetailsAttribution.setVisibility(View.VISIBLE);
-        mPlaceDetailsAttribution.setText(Html.fromHtml(thirdPartyAttribution.toString()));
-      }
-
       Log.i(TAG, "Place details received: " + place.getName());
 
       places.release();
     }
   };
-
-  private static Spanned formatPlaceDetails(Resources res, CharSequence name, String id,
-                                            CharSequence address, CharSequence phoneNumber, Uri websiteUri) {
-    Log.e(TAG, res.getString(R.string.place_details, name, id, address, phoneNumber,
-      websiteUri));
-    return Html.fromHtml(res.getString(R.string.place_details, name, id, address, phoneNumber,
-      websiteUri));
-
-  }
 
   @Override
   public void onConnectionFailed(ConnectionResult connectionResult) {
@@ -321,5 +252,47 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     Toast.makeText(this,
       "Could not connect to Google API Client: Error " + connectionResult.getErrorCode(),
       Toast.LENGTH_SHORT).show();
+  }
+
+  /* the onClick listener will validate all of the event data fields
+   * and then will pass on the data to the submitEvent method
+   */
+  @Override
+  public void onClick(View v) {
+    switch(v.getId()) {
+      case R.id.submitNewEvent:
+        /* TODO: add validation for event form
+         *
+         */
+        int messageResId = 0; //will be used to make toast
+        ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
+        String eventName = new_event_name.getText().toString();
+        String eventLocation = mAutocompleteView.getText().toString();
+        if(invitedFriends.size() == 0 || eventName == "" || eventLocation == "" || !isTimeSet()) {
+          messageResId = R.string.missing_event_field;
+        }
+        if(messageResId == 0) {
+          /*TODO: Parse invitedFriends into eventGuestList
+           */
+          Event event = new Event(eventName, "", eventTime.toString(), "");
+          submitEvent(event);
+        } else {
+          Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  //submitEvent will send the event object to the server and store it.
+  private void submitEvent(Event event) {
+    ServerRequests serverRequest = new ServerRequests(this);
+    serverRequest.storeEventDataInBackground(event, new GetEventCallback() {
+      @Override
+      public void done(Event returnedEvent) {
+        finish();
+      }
+    });
   }
 }

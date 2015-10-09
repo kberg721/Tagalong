@@ -61,14 +61,6 @@ public class PlaceAutoCompleteAdapter
     return mResultList.get(position);
   }
 
-  public void setGoogleApiClient(GoogleApiClient googleApiClient) {
-    if (googleApiClient == null || !googleApiClient.isConnected()) {
-      mGoogleApiClient = null;
-    } else {
-      mGoogleApiClient = googleApiClient;
-    }
-  }
-
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
     View row = super.getView(position, convertView, parent);
