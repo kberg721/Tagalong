@@ -76,8 +76,8 @@
           android:text="@string/event_location"
           android:textColor="#372c24" />
 
-        <EditText
-          android:id="@+id/new_event_location"
+        <AutoCompleteTextView
+          android:id="@+id/autocomplete_places"
           android:layout_height="35dp"
           android:layout_marginLeft="15dp"
           android:layout_marginTop="15dp"
@@ -91,6 +91,22 @@
           android:hint="Event Location"
           android:inputType="text"
           android:background="@drawable/edit_text" />
+
+        <TextView
+          android:id="@+id/place_details"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:autoLink="all"
+          android:text=""
+          android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+          android:id="@+id/place_attribution"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:autoLink="all"
+          android:text=""
+          android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
           android:layout_width="fill_parent"
