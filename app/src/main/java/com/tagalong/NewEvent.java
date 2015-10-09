@@ -51,7 +51,6 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   Button submitNewEvent;
   EditText new_event_name, new_event_location, new_event_invite;
   TagalongDate eventTime;
-  DropdownListAdapter dropdownListAdapter;
   private AutoCompleteTextView mAutocompleteView;
   private GoogleApiClient mGoogleApiClient;
   private PlaceAutoCompleteAdapter mAdapter;
@@ -60,6 +59,9 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   private static final String TAG = "TagalongPlaces";
   private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
     new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
+
+  DropdownListAdapter dropdownListAdapter;
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +73,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     getSupportActionBar().setIcon(R.drawable.tagalong_icon_small);
     Intent currentIntent = getIntent();
     friendsList = (ArrayList<Friend>) currentIntent.getSerializableExtra("friendsList");
+
     System.out.println("friend list: " + friendsList);
     eventTime = new TagalongDate();
 
@@ -133,6 +136,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     //the pop-up will be dismissed if touch event occurs anywhere outside its window
     pw.setTouchInterceptor(new View.OnTouchListener() {
       public boolean onTouch(View v, MotionEvent event) {
+
         if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
           pw.dismiss();
           return true;
@@ -162,6 +166,14 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.menu_new_event, menu);
     return true;
+  }
+
+  public void submitEvent() {
+    // TODO: extract other fields from the form
+    String eventName = null;
+    String eventLocation = null;
+    String eventTime = null;
+    ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
   }
 
   @Override
