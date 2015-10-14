@@ -110,6 +110,14 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     return true;
   }
 
+  public void submitEvent() {
+    // TODO: extract other fields from the form
+    String eventName = null;
+    String eventLocation = null;
+    String eventTime = null;
+    ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
+  }
+
   @Override
   public void onClick(View v) {
     switch(v.getId()) {
