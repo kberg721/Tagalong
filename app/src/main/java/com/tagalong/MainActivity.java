@@ -37,7 +37,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	}
 	
 	private boolean authenticate() {
-		if(userLocalStore.getLoggedInUser().fullName.equals("")) {
+		if(userLocalStore.getLoggedInUser().getFullName().equals("")) {
 			Intent intent = new Intent(this, LoginActivity.class);
 			startActivity(intent);
 			return false;
@@ -47,8 +47,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	
 	private void displayUserDetails() {
 		User user = userLocalStore.getLoggedInUser();
-		etName.setText(user.fullName);
-		etEmail.setText(user.email);
+		etName.setText(user.getFullName());
+		etEmail.setText(user.getEmail());
 	}
 	
 	@Override

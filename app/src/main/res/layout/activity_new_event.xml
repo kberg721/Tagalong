@@ -93,40 +93,23 @@
           android:background="@drawable/edit_text" />
 
         <TextView
+          android:id="@+id/eventDate"
           android:layout_width="fill_parent"
           android:layout_height="wrap_content"
           android:text="@string/event_time"
           android:textColor="#372c24" />
 
-        <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="15dp"
-          android:layout_marginBottom="10dp"
-          android:orientation="horizontal"
-          android:gravity="center">
 
-          <Button
-            android:id="@+id/btnEventTime"
-            android:layout_width="125dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="0dp"
-            android:background="@color/colorPrimary"
-            android:textColor="@color/white"
-            android:text="@string/event_time_picker"
-            android:layout_marginRight="12dp"
-            android:onClick="showTimePickerDialog" />
-
-          <Button
-            android:id="@+id/btnEventDate"
-            android:layout_width="125dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="0dp"
-            android:background="@color/colorPrimary"
-            android:textColor="@color/white"
-            android:text="@string/event_date_picker"
-            android:onClick="showDatePickerDialog" />
-        </LinearLayout>
+        <Button
+          android:layout_marginBottom="15dp"
+          android:layout_width="150dp"
+          android:layout_height="40dp"
+          android:text="@string/event_time_picker"
+          android:layout_gravity="center"
+          android:background="@color/colorPrimary"
+          android:textColor="@color/white"
+          android:layout_marginTop="10dp"
+          android:onClick="showTimePickerDialog"/>
 
         <TextView
           android:id="@+id/selectedValues"
@@ -147,7 +130,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-          <Button android:id="@+id/inviteButton"
+          <Button
+            android:id="@+id/inviteButton"
             android:layout_width="340dp"
             android:layout_height="45dp"
             android:text="Choose Guests"
@@ -183,8 +167,6 @@
           android:layout_gravity="center"
           android:background="@color/colorPrimary"
           android:textColor="@color/white"
-          android:paddingLeft="@dimen/activity_horizontal_margin"
-          android:paddingRight="@dimen/activity_horizontal_margin"
           android:layout_marginTop="10dp"/>
       </LinearLayout>
     </ScrollView>

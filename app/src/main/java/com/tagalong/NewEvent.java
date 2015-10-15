@@ -46,6 +46,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   private static final String TAG = "Tagalong";
   private EditText new_event_name;
   private TagalongDate eventTime;
+  private TextView eventDate;
   private Button submitNewEvent;
 
   //Used for Event Guest List
@@ -94,6 +95,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     mAutocompleteView.setOnItemClickListener(mAutocompleteClickListener);
 
     eventTime = new TagalongDate();
+    eventDate = (TextView)findViewById(R.id.eventDate);
     new_event_name = (EditText) findViewById(R.id.new_event_name);
     submitNewEvent = (Button) findViewById(R.id.submitNewEvent);
     submitNewEvent.setOnClickListener(this);
@@ -158,11 +160,13 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   public void showTimePickerDialog(View v) {
     DialogFragment newFragment = new TimePickerFragment();
     newFragment.show(getFragmentManager(), "timePicker");
+    showDatePickerDialog(v);
   }
 
   public void onTimeSelected(int hours, int minutes) {
     eventTime.setmHour(hours);
     eventTime.setmMinute(minutes);
+    setEventTimeText();
   }
 
   public void showDatePickerDialog(View v) {
@@ -176,8 +180,21 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     eventTime.setmDay(day);
   }
 
+  public void setEventTimeText() {
+    int notMilitaryTime = eventTime.getmHour() % 12;
+    String amOrPm = (notMilitaryTime != 0) ? "pm" : "am";
+    if (notMilitaryTime == 0){notMilitaryTime = 12;}
+    eventDate.setText("Time: " + notMilitaryTime + ":" + eventTime.getmMinute() +
+      amOrPm + " on " + eventTime.getmMonth() + "/" + eventTime.getmDay() +
+      "/" + eventTime.getmYear());
+  }
+
+  public void clearEventTimeText() {
+    eventDate.setText("Time");
+  }
+
   //Determines whether the event time has been set
-  public boolean isTimeSet() {
+  public boolean isEventTimeSet() {
     return !(eventTime.getmDay() == 0 || eventTime.getmMonth() == 0 || eventTime.getmYear() == 0 ||
       eventTime.getmHour() == 0 || eventTime.getmMinute() == 0);
   }
@@ -268,13 +285,17 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
         ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
         String eventName = new_event_name.getText().toString();
         String eventLocation = mAutocompleteView.getText().toString();
-        if(invitedFriends.size() == 0 || eventName == "" || eventLocation == "" || !isTimeSet()) {
+        if(invitedFriends.size() == 0 || eventName == "" || eventLocation == "" || !isEventTimeSet()) {
           messageResId = R.string.missing_event_field;
         }
         if(messageResId == 0) {
           /*TODO: Parse invitedFriends into eventGuestList
+           *TODO: get email to friends class
            */
-          Event event = new Event(eventName, "", eventTime.toString(), "");
+          Intent currentIntent = this.getIntent();
+          String hostEmail = currentIntent.getStringExtra("currentUserEmail");
+          int hostEventCounter = currentIntent.getIntExtra("currentUserEventCount", 0);
+          Event event = new Event(eventName, eventLocation, eventTime.toString(), "", hostEmail, hostEventCounter);
           submitEvent(event);
         } else {
           Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();

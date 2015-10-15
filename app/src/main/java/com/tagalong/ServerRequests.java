@@ -67,9 +67,9 @@ public class ServerRequests extends Admins {
 		@Override
 		protected Void doInBackground(Void... params) {
 			ArrayList<NameValuePair> dataToSend = new ArrayList<>();
-			dataToSend.add(new BasicNameValuePair("name", user.fullName));
-			dataToSend.add(new BasicNameValuePair("email", user.email));
-			dataToSend.add(new BasicNameValuePair("password", user.password));
+			dataToSend.add(new BasicNameValuePair("name", user.getFullName()));
+			dataToSend.add(new BasicNameValuePair("email", user.getEmail()));
+			dataToSend.add(new BasicNameValuePair("password", user.getPassword()));
 			
 			HttpParams httpRequestParam = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);
@@ -151,10 +151,10 @@ public class ServerRequests extends Admins {
 		@Override
 		protected User doInBackground(Void... params) {
 			ArrayList<NameValuePair> dataToSend = new ArrayList<>();
-			dataToSend.add(new BasicNameValuePair("email", user.email));
+			dataToSend.add(new BasicNameValuePair("email", user.getEmail()));
 			AccessToken isFBUser = AccessToken.getCurrentAccessToken();
 			if(isFBUser == null) {
-				dataToSend.add(new BasicNameValuePair("password", user.password));
+				dataToSend.add(new BasicNameValuePair("password", user.getPassword()));
 			}
 			
 			HttpParams httpRequestParam = new BasicHttpParams();
@@ -179,9 +179,9 @@ public class ServerRequests extends Admins {
 					String name = jObject.getString("name");
 
 					if(isFBUser != null) {
-						returnedUser = new User(name, "", user.email);
+						returnedUser = new User(name, "", user.getEmail());
 					} else {
-						returnedUser = new User(name, user.password, user.email);
+						returnedUser = new User(name, user.getPassword(), user.getEmail());
 					}
 				}
 				
@@ -237,7 +237,7 @@ public class ServerRequests extends Admins {
 				} else {
 					String name = jObject.getString("name");
 
-					returnedEvent = new Event(name, event.eventLocation, event.eventTime, event.guestList);
+					returnedEvent = new Event(name, event.eventLocation, event.eventTime, event.guestList, "", 0);
 				}
 
 			} catch(Exception e) {

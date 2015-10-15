@@ -18,8 +18,7 @@
   <string name="invite_input">Invite Guests</string>
   <string name="submit_new_event">Create Event</string>
   <string name="facebook_app_id">1779316108962161</string>
-  <string name="event_time_picker">Set Time</string>
-  <string name="event_date_picker">Set Date</string>
+  <string name="event_time_picker">Set Event Time</string>
   <string name="event_description">Event Description</string>
 
   <string name="email_toast">Invalid Email Address!</string>
