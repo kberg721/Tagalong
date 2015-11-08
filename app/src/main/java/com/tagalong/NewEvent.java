@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
 import com.tagalong.fragments.DatePickerFragment;
 import com.tagalong.fragments.TimePickerFragment;
 
@@ -34,6 +37,8 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   EditText new_event_name, new_event_location, new_event_invite;
   TagalongDate eventTime;
   DropdownListAdapter dropdownListAdapter;
+  LoginManager facebookLogin;
+  UserLocalStore userLocalStore;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +49,8 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     //getSupportActionBar().setDisplayUseLogoEnabled(true);
     getSupportActionBar().setIcon(R.drawable.tagalong_icon_small);
     Intent currentIntent = getIntent();
+    facebookLogin = LoginManager.getInstance();
+    userLocalStore = new UserLocalStore(this);
     friendsList = (ArrayList<Friend>) currentIntent.getSerializableExtra("friendsList");
     System.out.println("friend list: " + friendsList);
     eventTime = new TagalongDate();
@@ -180,5 +187,26 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   public boolean isTimeSet() {
     return !(eventTime.getmDay() == 0 || eventTime.getmMonth() == 0 || eventTime.getmYear() == 0 ||
       eventTime.getmHour() == 0 || eventTime.getmMinute() == 0);
+  }
+
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    int id = item.getItemId();
+    if (id == R.id.action_settings) {
+      return super.onOptionsItemSelected(item);
+    } else if (id == R.id.action_logout) {
+      AccessToken usedFacebook = AccessToken.getCurrentAccessToken();
+      if(usedFacebook != null) {
+        facebookLogin.logOut();
+      } else {
+        userLocalStore.clearUserData();
+        userLocalStore.setUserLoggedIn(false);
+      }
+      Intent loginIntent = new Intent(this, LoginActivity.class);
+      startActivity(loginIntent);
+      return true;
+    }
+    return super.onOptionsItemSelected(item);
   }
 }

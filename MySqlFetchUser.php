@@ -24,10 +24,14 @@
 		$user[name] = $name;
 		$user[password] = $password;
 	}
-
-	echo json_encode($user);
+	
+	if (count($user) == 0) {
+	  echo json_encode (new stdClass);
+	} else {
+	  echo json_encode($user);
+	}
 
 	mysqli_stmt_close($statement);
 
-	msqli_close($con);
+	mysqli_close($con);
 ?>
