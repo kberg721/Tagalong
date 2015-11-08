@@ -79,7 +79,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     //the pop-up will be dismissed if touch event occurs anywhere outside its window
     pw.setTouchInterceptor(new View.OnTouchListener() {
       public boolean onTouch(View v, MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_UP) {
+        if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
           pw.dismiss();
           return true;
         }
