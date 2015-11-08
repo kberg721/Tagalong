@@ -50,18 +50,18 @@ public class RegisterActivity extends Activity implements OnClickListener {
 				String name = etName.getText().toString();
 				String password = etPassword.getText().toString();
 				String email = etEmail.getText().toString();
-                if(!email.matches("[A-Za-z0-9]+@[A-Za-z0-9]+\\.[A-Za-z0-9]{2,4}")) {
-                    messageResId = R.string.email_toast;
-                } else if(!password.matches("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$")) {
-                    messageResId = R.string.password_toast;
-                }
+				if(!email.matches("[A-Za-z0-9]+@[A-Za-z0-9]+\\.[A-Za-z0-9]{2,4}")) {
+					messageResId = R.string.email_toast;
+				} else if(!password.matches("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$")) {
+					messageResId = R.string.password_toast;
+				}
 				if(messageResId == 0) {
-                    User user = new User(name, password, email);
-                    registerUser(user);
-                }  else {
-                    Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
-                }
-                break;
+					User user = new User(name, password, email);
+					registerUser(user);
+				}  else {
+					Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+				}
+				break;
 		}
     }
 	

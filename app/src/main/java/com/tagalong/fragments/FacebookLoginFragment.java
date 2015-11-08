@@ -1,15 +1,12 @@
 package com.tagalong.fragments;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -17,19 +14,26 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
-
-import android.support.v4.app.Fragment;
-
 import com.facebook.login.widget.LoginButton;
 import com.tagalong.FriendsArrayList;
+import com.tagalong.GetUserCallback;
 import com.tagalong.Mainpage;
 import com.tagalong.R;
+import com.tagalong.ServerRequests;
+import com.tagalong.User;
+import com.tagalong.UserLocalStore;
+
+import org.json.JSONObject;
 
 
 public class FacebookLoginFragment extends Fragment {
 
   private LoginButton loginButton;
   private CallbackManager callbackManager;
+  private ServerRequests serverRequest;
+  private UserLocalStore userLocalStore;
+  private User toBeRegistered;
+  private Intent mainpageIntent;
 
   public static FacebookLoginFragment newInstance() {
     return new FacebookLoginFragment();
@@ -42,6 +46,8 @@ public class FacebookLoginFragment extends Fragment {
     Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_facebook_login, container, false);
 
+    userLocalStore = new UserLocalStore(getContext());
+    serverRequest = new ServerRequests(getContext());
     loginButton = (LoginButton) view.findViewById(R.id.facebook_login_btn);
     callbackManager = CallbackManager.Factory.create();
 
@@ -54,26 +60,51 @@ public class FacebookLoginFragment extends Fragment {
     loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
       @Override
       public void onSuccess(LoginResult loginResult) {
+        Bundle params = new Bundle();
+        params.putString("fields", "id,name,email,picture,friends");
         new GraphRequest(
           loginResult.getAccessToken(),
-          "/me/friends",
-          null,
+          "/me",
+          params,
           HttpMethod.GET,
           new GraphRequest.Callback() {
             public void onCompleted(GraphResponse response) {
+              JSONObject jsonObject = response.getJSONObject();
               try {
-                Intent mainpageIntent = new Intent(getContext(), Mainpage.class);
+                String email = jsonObject.getString("email");
+                String name = jsonObject.getString("name");
+                User FBUser = new User(name, "", email);
+                mainpageIntent = new Intent(getActivity(), Mainpage.class);
                 mainpageIntent.putExtra("friendsList", new FriendsArrayList(
-                  response.getJSONObject().getJSONArray("data")
+                  jsonObject.getJSONObject("friends").getJSONArray("data")
                 ).getFriendObjects());
                 mainpageIntent.putExtra("loginStatus", true);
-                startActivity(mainpageIntent);
+                mainpageIntent.putExtra("name", jsonObject.getString("name"));
+                mainpageIntent.putExtra("email", jsonObject.getString("email"));
+                /*TODO: fix using Parcelable at future juncture.
+                  mainpageIntent.putExtra("picture", jsonObject.getJSONObject("picture"));
+                 */
+                authenticate(FBUser);
               } catch (org.json.JSONException e) {
                 System.out.println("Exception: " + e);
               }
             }
           }
         ).executeAsync();
+      }
+
+      private void authenticate(User user) {
+        toBeRegistered = user;
+        serverRequest.fetchUserDataAsyncTask(user, new GetUserCallback() {
+          @Override
+          public void done(User returnedUser) {
+            if (returnedUser == null) {
+              registerUser(toBeRegistered);
+            } else {
+              logUserIn(returnedUser);
+            }
+          }
+        });
       }
 
       @Override
@@ -87,6 +118,23 @@ public class FacebookLoginFragment extends Fragment {
       }
     });
     return view;
+  }
+
+  private void logUserIn(User returnedUser) {
+    userLocalStore.storeUserData(returnedUser);
+    userLocalStore.setUserLoggedIn(true);
+
+    startActivity(mainpageIntent);
+  }
+
+  private void registerUser(User user) {
+    ServerRequests serverRequest = new ServerRequests(getContext());
+    serverRequest.storeUserDataInBackground(user, new GetUserCallback() {
+      @Override
+      public void done(User returnedUser) {
+        startActivity(mainpageIntent);
+      }
+    });
   }
 
   @Override

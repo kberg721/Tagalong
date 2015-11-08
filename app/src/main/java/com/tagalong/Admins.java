@@ -19,4 +19,14 @@ public class Admins {
     return SERVER_ADDRESS + (ADMIN.equals("Chip") ? "MySqlFetchUser.php" : 
       "FetchUserData.php");
   }
+
+  protected String getSubmitEventFile() {
+
+    return SERVER_ADDRESS + "SubmitEvent.php";
+
+  }
+
+  protected String getFetchEventFile() {
+    return SERVER_ADDRESS + "FetchEventData.php";
+  }
 }

@@ -1,5 +1,6 @@
 package com.tagalong;
 
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
@@ -12,17 +13,26 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.tagalong.fragments.DatePickerFragment;
+import com.tagalong.fragments.TimePickerFragment;
 
 import java.util.ArrayList;
 
-public class NewEvent extends AppCompatActivity implements View.OnClickListener {
+public class NewEvent extends AppCompatActivity implements View.OnClickListener,
+  DatePickerFragment.OnDateSelectedListener, TimePickerFragment.OnTimeSelectedListener {
 
   private ArrayList<Friend> friendsList;
+  Button btnCreateEvent;
+  EditText new_event_name, new_event_location, new_event_invite;
+  TagalongDate eventTime;
   DropdownListAdapter dropdownListAdapter;
 
   @Override
@@ -35,19 +45,18 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener 
     getSupportActionBar().setIcon(R.drawable.tagalong_icon_small);
     Intent currentIntent = getIntent();
     friendsList = (ArrayList<Friend>) currentIntent.getSerializableExtra("friendsList");
+    System.out.println("friend list: " + friendsList);
+    eventTime = new TagalongDate();
+
+    btnCreateEvent = (Button) findViewById(R.id.submitNewEvent);
+    new_event_name = (EditText) findViewById(R.id.new_event_name);
+    new_event_location = (EditText) findViewById(R.id.new_event_location);
 
     //onClickListener to initiate the dropDown list
     Button inviteButton = (Button)findViewById(R.id.inviteButton);
     inviteButton.setOnClickListener(new View.OnClickListener() {
       public void onClick(View v) {
         initiatePopUp(friendsList);
-      }
-    });
-
-    Button submitButton = (Button) findViewById(R.id.submitNewEvent);
-    submitButton.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
-        submitEvent();
       }
     });
   }
@@ -112,8 +121,64 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener 
   @Override
   public void onClick(View v) {
     switch(v.getId()) {
+      case R.id.submitNewEvent:
+        /* TODO: add validation for event form
+         *
+         */
+        int messageResId = 0; //will be used to make toast
+        ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
+        String eventName = new_event_name.getText().toString();
+        String eventLocation = new_event_location.getText().toString();
+        String eventGuestList = new_event_invite.getText().toString();
+        if(eventGuestList == "" || eventName == "" || eventLocation == "" || !isTimeSet()) {
+          messageResId = R.string.missing_event_field;
+        }
+        if(messageResId == 0) {
+          Event event = new Event(eventName, eventLocation, eventTime.toString(), eventGuestList);
+          submitEvent(event);
+        } else {
+          Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+        }
+        break;
       default:
         break;
     }
+  }
+
+  private void submitEvent(Event event) {
+    ServerRequests serverRequest = new ServerRequests(this);
+    serverRequest.storeEventDataInBackground(event, new GetEventCallback() {
+      @Override
+      public void done(Event returnedEvent) {
+        finish();
+      }
+    });
+  }
+      
+  public void showTimePickerDialog(View v) {
+    DialogFragment newFragment = new TimePickerFragment();
+    newFragment.show(getFragmentManager(), "timePicker");
+  }
+
+  public void onTimeSelected(int hours, int minutes) {
+    eventTime.setmHour(hours);
+    eventTime.setmMinute(minutes);
+  }
+
+  public void showDatePickerDialog(View v) {
+    DialogFragment newFragment = new DatePickerFragment();
+    newFragment.show(getFragmentManager(), "datePicker");
+  }
+
+  public void onDateSelected(int year, int month, int day) {
+    eventTime.setmYear(year);
+    eventTime.setmMonth(month);
+    eventTime.setmDay(day);
+  }
+
+  //Determines whether the event time has been set
+  public boolean isTimeSet() {
+    return !(eventTime.getmDay() == 0 || eventTime.getmMonth() == 0 || eventTime.getmYear() == 0 ||
+      eventTime.getmHour() == 0 || eventTime.getmMinute() == 0);
   }
 }

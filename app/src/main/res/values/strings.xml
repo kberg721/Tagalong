@@ -18,11 +18,14 @@
   <string name="invite_input">Invite Guests</string>
   <string name="submit_new_event">Create Event</string>
   <string name="facebook_app_id">1779316108962161</string>
+  <string name="event_time_picker">Set Time</string>
+  <string name="event_date_picker">Set Date</string>
 
   <string name="email_toast">Invalid Email Address!</string>
-    <string name="password_toast">Passwords must have at least 8 characters, 1 capital letter,
+  <string name="password_toast">Passwords must have at least 8 characters, 1 capital letter,
                                   and must include letters and numbers!</string>
   <string name="both_invalid_toast">Either password or email is invalid!</string>
+  <string name="missing_event_field">Missing Field!</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
