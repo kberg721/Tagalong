@@ -46,8 +46,8 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 		switch(v.getId()) {
 			case R.id.link_to_register:
 				Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
-	            startActivity(i);
-	            break;
+				startActivity(i);
+				break;
 			case R.id.btnLogin:
 				String email = etEmail.getText().toString();
 				String password = etPassword.getText().toString();
