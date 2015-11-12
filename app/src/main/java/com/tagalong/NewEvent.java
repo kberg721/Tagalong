@@ -58,6 +58,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   private PlaceAutoCompleteAdapter mAdapter;
   private static final LatLngBounds BOUNDS_GREATER_SEATTLE = new LatLngBounds(
     new LatLng(47.498833, -122.381676), new LatLng(47.782455, -122.243813));
+  Button btnCreateEvent;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +74,10 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     friendsList = (ArrayList<Friend>) currentIntent.getSerializableExtra("friendsList");
     System.out.println("friend list: " + friendsList);
 
+    eventTime = new TagalongDate();
+    btnCreateEvent = (Button) findViewById(R.id.submitNewEvent);
+    new_event_name = (EditText) findViewById(R.id.new_event_name);
+
     //onClickListener to initiate the dropDown list
     Button inviteButton = (Button)findViewById(R.id.inviteButton);
     inviteButton.setOnClickListener(new View.OnClickListener() {
@@ -80,7 +85,6 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
         initiatePopUp(friendsList);
       }
     });
-
     //Event Location
     mAutocompleteView = (AutoCompleteTextView) findViewById(R.id.autocomplete_places);
     mGoogleApiClient = new GoogleApiClient
@@ -127,7 +131,6 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     //the pop-up will be dismissed if touch event occurs anywhere outside its window
     pw.setTouchInterceptor(new View.OnTouchListener() {
       public boolean onTouch(View v, MotionEvent event) {
-
         if (event.getAction() == MotionEvent.ACTION_UP) {
           pw.dismiss();
           return true;
