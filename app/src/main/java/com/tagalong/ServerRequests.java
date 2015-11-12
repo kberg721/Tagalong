@@ -112,6 +112,8 @@ public class ServerRequests extends Admins {
 			dataToSend.add(new BasicNameValuePair("eventLocation", event.eventLocation));
 			dataToSend.add(new BasicNameValuePair("eventTime", event.eventTime));
 			dataToSend.add(new BasicNameValuePair("eventGuestlist", event.guestList));
+			dataToSend.add(new BasicNameValuePair("eventHostEmail", event.hostEmail));
+			dataToSend.add(new BasicNameValuePair("eventHostEventCount", Integer.toString(event.hostEventCount)));
 
 
 			HttpParams httpRequestParam = new BasicHttpParams();
@@ -211,10 +213,11 @@ public class ServerRequests extends Admins {
 		@Override
 		protected Event doInBackground(Void... params) {
 			ArrayList<NameValuePair> dataToSend = new ArrayList<>();
-			dataToSend.add(new BasicNameValuePair("eventName", event.eventName));
 			dataToSend.add(new BasicNameValuePair("eventLocation", event.eventLocation));
 			dataToSend.add(new BasicNameValuePair("eventTime", event.eventTime));
 			dataToSend.add(new BasicNameValuePair("eventGuestlist", event.guestList));
+			dataToSend.add(new BasicNameValuePair("eventHostEmail", event.hostEmail));
+			dataToSend.add(new BasicNameValuePair("eventHostEventCount", Integer.toString(event.hostEventCount)));
 
 			HttpParams httpRequestParam = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);
@@ -233,11 +236,12 @@ public class ServerRequests extends Admins {
 				JSONObject jObject = new JSONObject(result);
 
 				if(jObject.length() == 0) {
-					event = null;
+					returnedEvent = null;
 				} else {
-					String name = jObject.getString("name");
+					String name = jObject.getString("eventName");
 
-					returnedEvent = new Event(name, event.eventLocation, event.eventTime, event.guestList, "", 0);
+					returnedEvent = new Event(name, event.eventLocation, event.eventTime, event.guestList,
+						event.hostEmail, event.hostEventCount);
 				}
 
 			} catch(Exception e) {

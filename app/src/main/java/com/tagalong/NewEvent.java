@@ -176,7 +176,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
 
   public void onDateSelected(int year, int month, int day) {
     eventTime.setmYear(year);
-    eventTime.setmMonth(month);
+    eventTime.setmMonth(month + 1);
     eventTime.setmDay(day);
   }
 
