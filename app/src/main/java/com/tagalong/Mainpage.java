@@ -11,6 +11,9 @@ import android.view.MenuItem;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 
 import java.util.ArrayList;
@@ -80,6 +83,26 @@ public class Mainpage extends AppCompatActivity {
       Intent intent = new Intent(this, LoginActivity.class);
       startActivity(intent);
       return false;
+    }
+    if (friendsList == null && loggedIntoFB != null) {
+      // Get friends list
+      new GraphRequest(
+        loggedIntoFB,
+        "/me/friends",
+        null,
+        HttpMethod.GET,
+        new GraphRequest.Callback() {
+          public void onCompleted(GraphResponse response) {
+            try {
+              friendsList = new FriendsArrayList(
+                response.getJSONObject().getJSONArray("data")
+              ).getFriendObjects();
+            } catch (org.json.JSONException e) {
+              System.out.println("Exception: " + e);
+            }
+          }
+        }
+      ).executeAsync();
     }
     return true;
   }
