@@ -7,12 +7,15 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -21,18 +24,42 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBuffer;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.tagalong.fragments.DatePickerFragment;
 import com.tagalong.fragments.TimePickerFragment;
 
 import java.util.ArrayList;
 
 public class NewEvent extends AppCompatActivity implements View.OnClickListener,
-  DatePickerFragment.OnDateSelectedListener, TimePickerFragment.OnTimeSelectedListener {
+  DatePickerFragment.OnDateSelectedListener, TimePickerFragment.OnTimeSelectedListener,
+  GoogleApiClient.OnConnectionFailedListener {
 
+  private static final String TAG = "Tagalong";
+  private EditText new_event_name;
+  private TagalongDate eventTime;
+  private Button submitNewEvent;
+
+  //Used for Event Guest List
   private ArrayList<Friend> friendsList;
+  private DropdownListAdapter dropdownListAdapter;
+
+  //Used for Event Location
+  private AutoCompleteTextView mAutocompleteView;
+  private GoogleApiClient mGoogleApiClient;
+  private PlaceAutoCompleteAdapter mAdapter;
+  private static final LatLngBounds BOUNDS_GREATER_SEATTLE = new LatLngBounds(
+    new LatLng(47.498833, -122.381676), new LatLng(47.782455, -122.243813));
   Button btnCreateEvent;
   EditText new_event_name, new_event_location, new_event_invite;
   TagalongDate eventTime;
@@ -48,16 +75,17 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     setSupportActionBar(toolbar);
     //getSupportActionBar().setDisplayUseLogoEnabled(true);
     getSupportActionBar().setIcon(R.drawable.tagalong_icon_small);
+
+    //Event Guest List Initializations
     Intent currentIntent = getIntent();
     facebookLogin = LoginManager.getInstance();
     userLocalStore = new UserLocalStore(this);
     friendsList = (ArrayList<Friend>) currentIntent.getSerializableExtra("friendsList");
     System.out.println("friend list: " + friendsList);
-    eventTime = new TagalongDate();
 
+    eventTime = new TagalongDate();
     btnCreateEvent = (Button) findViewById(R.id.submitNewEvent);
     new_event_name = (EditText) findViewById(R.id.new_event_name);
-    new_event_location = (EditText) findViewById(R.id.new_event_location);
 
     //onClickListener to initiate the dropDown list
     Button inviteButton = (Button)findViewById(R.id.inviteButton);
@@ -66,8 +94,34 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
         initiatePopUp(friendsList);
       }
     });
+    //Event Location
+    mAutocompleteView = (AutoCompleteTextView) findViewById(R.id.autocomplete_places);
+    mGoogleApiClient = new GoogleApiClient
+      .Builder(this)
+      .addApi(Places.GEO_DATA_API)
+      .addOnConnectionFailedListener(this)
+      .build();
+    mAdapter = new PlaceAutoCompleteAdapter(this, mGoogleApiClient, BOUNDS_GREATER_SEATTLE,
+      null);
+    mAutocompleteView.setAdapter(mAdapter);
+    mAutocompleteView.setOnItemClickListener(mAutocompleteClickListener);
+
+    eventTime = new TagalongDate();
+    new_event_name = (EditText) findViewById(R.id.new_event_name);
+    submitNewEvent = (Button) findViewById(R.id.submitNewEvent);
+    submitNewEvent.setOnClickListener(this);
   }
 
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    // Inflate the menu; this adds items to the action bar if it is present.
+    getMenuInflater().inflate(R.menu.menu_new_event, menu);
+    return true;
+  }
+
+  /* This section deals with the code that will initialize the drop down menu
+     containing all of the user's friends.
+   */
   private void initiatePopUp(ArrayList<Friend> friendsList) {
     LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context
       .LAYOUT_INFLATER_SERVICE);
@@ -86,7 +140,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     //the pop-up will be dismissed if touch event occurs anywhere outside its window
     pw.setTouchInterceptor(new View.OnTouchListener() {
       public boolean onTouch(View v, MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
           pw.dismiss();
           return true;
         }
@@ -110,21 +164,111 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
 
   }
 
+  /*  The following code supports the Time and Date widgets
+      to enable the user to set the event time.
+   */
+  public void showTimePickerDialog(View v) {
+    DialogFragment newFragment = new TimePickerFragment();
+    newFragment.show(getFragmentManager(), "timePicker");
+  }
+
+  public void onTimeSelected(int hours, int minutes) {
+    eventTime.setmHour(hours);
+    eventTime.setmMinute(minutes);
+  }
+
+  public void showDatePickerDialog(View v) {
+    DialogFragment newFragment = new DatePickerFragment();
+    newFragment.show(getFragmentManager(), "datePicker");
+  }
+
+  public void onDateSelected(int year, int month, int day) {
+    eventTime.setmYear(year);
+    eventTime.setmMonth(month);
+    eventTime.setmDay(day);
+  }
+
+  //Determines whether the event time has been set
+  public boolean isTimeSet() {
+    return !(eventTime.getmDay() == 0 || eventTime.getmMonth() == 0 || eventTime.getmYear() == 0 ||
+      eventTime.getmHour() == 0 || eventTime.getmMinute() == 0);
+  }
+
+  /* The following methods and declarations support the Event Location functionality,
+     making calls to the Google Places API with the use of a PlaceAutoCompleteAdapter
+   */
+  @Override
+  protected void onStart() {
+    super.onStart();
+    mGoogleApiClient.connect();
+  }
+
+  @Override
+  protected void onStop() {
+    mGoogleApiClient.disconnect();
+    super.onStop();
+  }
+
+  private AdapterView.OnItemClickListener mAutocompleteClickListener
+    = new AdapterView.OnItemClickListener() {
     @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_new_event, menu);
-    return true;
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            /*
+             Retrieve the place ID of the selected item from the Adapter.
+             The adapter stores each Place suggestion in a AutocompletePrediction from which we
+             read the place ID and title.
+            */
+      final AutocompletePrediction item = mAdapter.getItem(position);
+      final String placeId = item.getPlaceId();
+      final CharSequence primaryText = item.getPrimaryText(null);
+
+      Log.i(TAG, "Autocomplete item selected: " + primaryText);
+
+            /*
+             Issue a request to the Places Geo Data API to retrieve a Place object with additional
+             details about the place.
+              */
+      PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi
+        .getPlaceById(mGoogleApiClient, placeId);
+      placeResult.setResultCallback(mUpdatePlaceDetailsCallback);
+
+      Log.i(TAG, "Called getPlaceById to get Place details for " + placeId);
+    }
+  };
+
+  private ResultCallback<PlaceBuffer> mUpdatePlaceDetailsCallback
+    = new ResultCallback<PlaceBuffer>() {
+    @Override
+    public void onResult(PlaceBuffer places) {
+      if (!places.getStatus().isSuccess()) {
+        // Request did not complete successfully
+        Log.e(TAG, "Place query did not complete. Error: " + places.getStatus().toString());
+        places.release();
+        return;
+      }
+      // Get the Place object from the buffer.
+      final Place place = places.get(0);
+
+      Log.i(TAG, "Place details received: " + place.getName());
+
+      places.release();
+    }
+  };
+
+  @Override
+  public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    Log.e(TAG, "onConnectionFailed: ConnectionResult.getErrorCode() = "
+      + connectionResult.getErrorCode());
+
+    Toast.makeText(this,
+      "Could not connect to Google API Client: Error " + connectionResult.getErrorCode(),
+      Toast.LENGTH_SHORT).show();
   }
 
-  public void submitEvent() {
-    // TODO: extract other fields from the form
-    String eventName = null;
-    String eventLocation = null;
-    String eventTime = null;
-    ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
-  }
-
+  /* the onClick listener will validate all of the event data fields
+   * and then will pass on the data to the submitEvent method
+   */
   @Override
   public void onClick(View v) {
     switch(v.getId()) {
@@ -135,13 +279,14 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
         int messageResId = 0; //will be used to make toast
         ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
         String eventName = new_event_name.getText().toString();
-        String eventLocation = new_event_location.getText().toString();
-        String eventGuestList = new_event_invite.getText().toString();
-        if(eventGuestList == "" || eventName == "" || eventLocation == "" || !isTimeSet()) {
+        String eventLocation = mAutocompleteView.getText().toString();
+        if(invitedFriends.size() == 0 || eventName == "" || eventLocation == "" || !isTimeSet()) {
           messageResId = R.string.missing_event_field;
         }
         if(messageResId == 0) {
-          Event event = new Event(eventName, eventLocation, eventTime.toString(), eventGuestList);
+          /*TODO: Parse invitedFriends into eventGuestList
+           */
+          Event event = new Event(eventName, "", eventTime.toString(), "");
           submitEvent(event);
         } else {
           Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
@@ -152,6 +297,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     }
   }
 
+  //submitEvent will send the event object to the server and store it.
   private void submitEvent(Event event) {
     ServerRequests serverRequest = new ServerRequests(this);
     serverRequest.storeEventDataInBackground(event, new GetEventCallback() {
