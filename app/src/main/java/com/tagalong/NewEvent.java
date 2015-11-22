@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,8 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -59,6 +61,11 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   private static final LatLngBounds BOUNDS_GREATER_SEATTLE = new LatLngBounds(
     new LatLng(47.498833, -122.381676), new LatLng(47.782455, -122.243813));
   Button btnCreateEvent;
+  EditText new_event_name, new_event_location, new_event_invite;
+  TagalongDate eventTime;
+  DropdownListAdapter dropdownListAdapter;
+  LoginManager facebookLogin;
+  UserLocalStore userLocalStore;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +78,8 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
 
     //Event Guest List Initializations
     Intent currentIntent = getIntent();
+    facebookLogin = LoginManager.getInstance();
+    userLocalStore = new UserLocalStore(this);
     friendsList = (ArrayList<Friend>) currentIntent.getSerializableExtra("friendsList");
     System.out.println("friend list: " + friendsList);
 
@@ -297,5 +306,53 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
         finish();
       }
     });
+  }
+      
+  public void showTimePickerDialog(View v) {
+    DialogFragment newFragment = new TimePickerFragment();
+    newFragment.show(getFragmentManager(), "timePicker");
+  }
+
+  public void onTimeSelected(int hours, int minutes) {
+    eventTime.setmHour(hours);
+    eventTime.setmMinute(minutes);
+  }
+
+  public void showDatePickerDialog(View v) {
+    DialogFragment newFragment = new DatePickerFragment();
+    newFragment.show(getFragmentManager(), "datePicker");
+  }
+
+  public void onDateSelected(int year, int month, int day) {
+    eventTime.setmYear(year);
+    eventTime.setmMonth(month);
+    eventTime.setmDay(day);
+  }
+
+  //Determines whether the event time has been set
+  public boolean isTimeSet() {
+    return !(eventTime.getmDay() == 0 || eventTime.getmMonth() == 0 || eventTime.getmYear() == 0 ||
+      eventTime.getmHour() == 0 || eventTime.getmMinute() == 0);
+  }
+
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    int id = item.getItemId();
+    if (id == R.id.action_settings) {
+      return super.onOptionsItemSelected(item);
+    } else if (id == R.id.action_logout) {
+      AccessToken usedFacebook = AccessToken.getCurrentAccessToken();
+      if(usedFacebook != null) {
+        facebookLogin.logOut();
+      } else {
+        userLocalStore.clearUserData();
+        userLocalStore.setUserLoggedIn(false);
+      }
+      Intent loginIntent = new Intent(this, LoginActivity.class);
+      startActivity(loginIntent);
+      return true;
+    }
+    return super.onOptionsItemSelected(item);
   }
 }
