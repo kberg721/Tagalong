@@ -110,10 +110,10 @@ public class ServerRequests extends Admins {
 			ArrayList<NameValuePair> dataToSend = new ArrayList<>();
       dataToSend.add(new BasicNameValuePair("hostEmail", event.hostEmail));
       dataToSend.add(new BasicNameValuePair("hostEventCount", Integer.toString(event.hostEventCount)));
-			dataToSend.add(new BasicNameValuePair("eventName", event.eventName));
-			dataToSend.add(new BasicNameValuePair("eventLocation", event.eventLocation));
-			dataToSend.add(new BasicNameValuePair("eventTime", event.eventTime));
-			dataToSend.add(new BasicNameValuePair("eventDescription", event.eventDescription));
+			dataToSend.add(new BasicNameValuePair("name", event.eventName));
+			dataToSend.add(new BasicNameValuePair("location", event.eventLocation));
+			dataToSend.add(new BasicNameValuePair("time", event.eventTime));
+			dataToSend.add(new BasicNameValuePair("description", event.eventDescription));
 			//dataToSend.add(new BasicNameValuePair("eventGuestlist", event.guestList));
 
 
