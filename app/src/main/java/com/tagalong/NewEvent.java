@@ -249,6 +249,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
         // For event table, we need: host email, host event count, event name, location, time, description
         String hostEmail = userLocalStore.getLoggedInUser().email;
         int eventCount = userLocalStore.getLoggedInUser().eventCount + 1;
+        // TODO: update event count in user table
         ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
         String eventName = new_event_name.getText().toString();
         String eventLocation = mAutocompleteView.getText().toString();
@@ -257,7 +258,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
           messageResId = R.string.missing_event_field;
         }
         if(messageResId == 0) {
-          /*TODO: Parse invitedFriends into eventGuestList*/
+          /*TODO: Parse invitedFriends into eventGuestList, add into invitee table*/
           Event event = new Event(hostEmail, eventCount, eventName, eventLocation, eventTime.toString(), eventDescription);
           submitEvent(event);
         } else {
