@@ -24,7 +24,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 		super.onCreate(savedInstanceState);
 		FacebookSdk.sdkInitialize(getApplicationContext());
 		setContentView(R.layout.activity_login);
-		
 		btnLogin = (Button) findViewById(R.id.btnLogin);
 		registerScreen = (TextView) findViewById(R.id.link_to_register);
 		etPassword = (EditText) findViewById(R.id.etPassword);

@@ -46,8 +46,6 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   GoogleApiClient.OnConnectionFailedListener {
 
   private static final String TAG = "Tagalong";
-  private EditText new_event_name;
-  private TagalongDate eventTime;
   private Button submitNewEvent;
 
   //Used for Event Guest List
@@ -60,10 +58,9 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   private PlaceAutoCompleteAdapter mAdapter;
   private static final LatLngBounds BOUNDS_GREATER_SEATTLE = new LatLngBounds(
     new LatLng(47.498833, -122.381676), new LatLng(47.782455, -122.243813));
-  Button btnCreateEvent;
-  EditText new_event_name, new_event_location, new_event_invite;
-  TagalongDate eventTime;
-  DropdownListAdapter dropdownListAdapter;
+  private Button btnCreateEvent;
+  private EditText new_event_name, new_event_location, new_event_invite, new_event_description;
+  private TagalongDate eventTime;
   LoginManager facebookLogin;
   UserLocalStore userLocalStore;
 
@@ -86,6 +83,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     eventTime = new TagalongDate();
     btnCreateEvent = (Button) findViewById(R.id.submitNewEvent);
     new_event_name = (EditText) findViewById(R.id.new_event_name);
+    new_event_description = (EditText) findViewById(R.id.new_event_description);
 
     //onClickListener to initiate the dropDown list
     Button inviteButton = (Button)findViewById(R.id.inviteButton);
@@ -140,7 +138,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     //the pop-up will be dismissed if touch event occurs anywhere outside its window
     pw.setTouchInterceptor(new View.OnTouchListener() {
       public boolean onTouch(View v, MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_UP) {
+        if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
           pw.dismiss();
           return true;
         }
@@ -162,36 +160,6 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     // are displayed
     list.setAdapter(dropdownListAdapter);
 
-  }
-
-  /*  The following code supports the Time and Date widgets
-      to enable the user to set the event time.
-   */
-  public void showTimePickerDialog(View v) {
-    DialogFragment newFragment = new TimePickerFragment();
-    newFragment.show(getFragmentManager(), "timePicker");
-  }
-
-  public void onTimeSelected(int hours, int minutes) {
-    eventTime.setmHour(hours);
-    eventTime.setmMinute(minutes);
-  }
-
-  public void showDatePickerDialog(View v) {
-    DialogFragment newFragment = new DatePickerFragment();
-    newFragment.show(getFragmentManager(), "datePicker");
-  }
-
-  public void onDateSelected(int year, int month, int day) {
-    eventTime.setmYear(year);
-    eventTime.setmMonth(month);
-    eventTime.setmDay(day);
-  }
-
-  //Determines whether the event time has been set
-  public boolean isTimeSet() {
-    return !(eventTime.getmDay() == 0 || eventTime.getmMonth() == 0 || eventTime.getmYear() == 0 ||
-      eventTime.getmHour() == 0 || eventTime.getmMinute() == 0);
   }
 
   /* The following methods and declarations support the Event Location functionality,
@@ -277,16 +245,20 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
          *
          */
         int messageResId = 0; //will be used to make toast
+
+        // For event table, we need: host email, host event count, event name, location, time, description
+        String hostEmail = userLocalStore.getLoggedInUser().email;
+        int eventCount = userLocalStore.getLoggedInUser().eventCount + 1;
         ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
         String eventName = new_event_name.getText().toString();
         String eventLocation = mAutocompleteView.getText().toString();
-        if(invitedFriends.size() == 0 || eventName == "" || eventLocation == "" || !isTimeSet()) {
+        String eventDescription = new_event_description.getText().toString();
+        if(invitedFriends.size() == 0 || eventName == "" || !isTimeSet()) {
           messageResId = R.string.missing_event_field;
         }
         if(messageResId == 0) {
-          /*TODO: Parse invitedFriends into eventGuestList
-           */
-          Event event = new Event(eventName, "", eventTime.toString(), "");
+          /*TODO: Parse invitedFriends into eventGuestList*/
+          Event event = new Event(hostEmail, eventCount, eventName, eventLocation, eventTime.toString(), eventDescription);
           submitEvent(event);
         } else {
           Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();

@@ -4,14 +4,16 @@ package com.tagalong;
  * Created by Kyle on 10/2/15.
  */
 public class Event {
-  String eventName, eventLocation, eventTime, guestList;
+  String hostEmail, eventName, eventLocation, eventTime, eventDescription /*, guestList*/;
+  int hostEventCount;
 
-
-  public Event(String name, String location, String time, String guestList) {
+  public Event(String hostEmail, int hostEventCount, String name, String location, String time, String description/*String guestList*/) {
+    this.hostEmail = hostEmail;
+    this.hostEventCount = hostEventCount;
     this.eventName = name;
     this.eventLocation = location;
     this.eventTime = time;
-    this.guestList = guestList;
+    this.eventDescription = description;
+//    this.guestList = guestList;
   }
-
 }

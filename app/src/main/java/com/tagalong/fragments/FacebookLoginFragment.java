@@ -73,7 +73,7 @@ public class FacebookLoginFragment extends Fragment {
               try {
                 String email = jsonObject.getString("email");
                 String name = jsonObject.getString("name");
-                User FBUser = new User(name, "", email);
+                User FBUser = new User(name, email, "");
                 mainpageIntent = new Intent(getActivity(), Mainpage.class);
                 mainpageIntent.putExtra("friendsList", new FriendsArrayList(
                   jsonObject.getJSONObject("friends").getJSONArray("data")

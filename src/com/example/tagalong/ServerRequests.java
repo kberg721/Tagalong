@@ -121,7 +121,7 @@ public class ServerRequests {
 				} else {
 					String name = jObject.getString("name");
 					
-					returnedUser = new User(name, user.password, user.email);
+					returnedUser = new User(name, user.email, user.password);
 				}
 				
 			} catch(Exception e) {

@@ -56,7 +56,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 					messageResId = R.string.password_toast;
 				}
 				if(messageResId == 0) {
-					User user = new User(name, password, email);
+					User user = new User(name, email, password);
 					registerUser(user);
 				}  else {
 					Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
