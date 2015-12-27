@@ -245,11 +245,13 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
          *
          */
         int messageResId = 0; //will be used to make toast
+        User currentUser = userLocalStore.getLoggedInUser();
 
         // For event table, we need: host email, host event count, event name, location, time, description
-        String hostEmail = userLocalStore.getLoggedInUser().email;
-        int eventCount = userLocalStore.getLoggedInUser().eventCount + 1;
-        // TODO: update event count in user table
+        String hostEmail = currentUser.email;
+        int eventCount = currentUser.eventCount + 1;
+        User user = new User(currentUser.fullName, currentUser.email, currentUser.password, eventCount);
+        storeUserData(user);
         ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
         String eventName = new_event_name.getText().toString();
         String eventLocation = mAutocompleteView.getText().toString();
@@ -258,7 +260,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
           messageResId = R.string.missing_event_field;
         }
         if(messageResId == 0) {
-          /*TODO: Parse invitedFriends into eventGuestList, add into invitee table*/
+          addInvitees(invitedFriends, currentUser);
           Event event = new Event(hostEmail, eventCount, eventName, eventLocation, eventTime.toString(), eventDescription);
           submitEvent(event);
         } else {
@@ -267,6 +269,19 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
         break;
       default:
         break;
+    }
+  }
+
+  private void addInvitees(ArrayList<Friend> invitees, User host) {
+    ServerRequests serverRequest = new ServerRequests(this);
+    for (Friend invitee : invitees) {
+      // TODO: send push requests here
+      serverRequest.storeInviteeDataInBackground(host, invitee, new GetInviteeCallback() {
+        @Override
+        public void done(Object o) {
+          finish();
+        }
+      }, EventResponse.NO_RESPONSE);
     }
   }
 
@@ -308,6 +323,14 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
       eventTime.getmHour() == 0 || eventTime.getmMinute() == 0);
   }
 
+  // TODO: move this from NewEvent and RegisterActivity to a common file
+  private void storeUserData(User user) {
+    ServerRequests serverRequest = new ServerRequests(this);
+    serverRequest.storeUserDataInBackground(user, new GetUserCallback() {
+      @Override
+      public void done(User returnedUser){ finish(); }
+    });
+  }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {

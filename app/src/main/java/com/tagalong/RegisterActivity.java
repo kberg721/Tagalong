@@ -56,14 +56,14 @@ public class RegisterActivity extends Activity implements OnClickListener {
 					messageResId = R.string.password_toast;
 				}
 				if(messageResId == 0) {
-					User user = new User(name, email, password);
+					User user = new User(name, email, password, 0);
 					registerUser(user);
 				}  else {
 					Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
 				}
 				break;
 		}
-    }
+	}
 	
 	private void registerUser(User user) {
 		ServerRequests serverRequest = new ServerRequests(this);

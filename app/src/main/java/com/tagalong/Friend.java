@@ -10,11 +10,13 @@ import android.os.Parcelable;
 public class Friend implements Parcelable {
   private String name;
   private String id;
+  private String email;
   private boolean selected;
 
-  public Friend(String name, String id) {
+  public Friend(String name, String id, String email) {
     this.name = name;
     this.id = id;
+    this.email = email;
     this.selected = false;
   }
 
@@ -26,6 +28,8 @@ public class Friend implements Parcelable {
     return this.id;
   }
 
+  public String getEmail() { return this.email; }
+
   public boolean isSelected() { return this.selected; }
 
   public void setSelected(boolean selectedState) {
@@ -35,6 +39,7 @@ public class Friend implements Parcelable {
   protected Friend(Parcel in) {
     name = in.readString();
     id = in.readString();
+    email = in.readString();
     boolean[] selectedArray = new boolean[1];
     in.readBooleanArray(selectedArray);
     this.selected = selectedArray[0];
@@ -49,6 +54,7 @@ public class Friend implements Parcelable {
   public void writeToParcel(Parcel dest, int flags) {
     dest.writeString(this.name);
     dest.writeString(this.id);
+    dest.writeString(this.email);
     dest.writeBooleanArray(new boolean[] {this.selected});
   }
 

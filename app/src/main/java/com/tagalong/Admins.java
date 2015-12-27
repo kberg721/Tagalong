@@ -24,6 +24,10 @@ public class Admins {
     return SERVER_ADDRESS + (ADMIN.equals("Chip") ? "MySqlSubmitEvent.php" : "SubmitEvent.php");
   }
 
+  protected String getSubmitInviteeFile() {
+    return SERVER_ADDRESS + (ADMIN.equals("Chip") ? "MySqlSubmitInvitee.php" : "SubmitInvitee.php");
+  }
+
   protected String getFetchEventFile() {
     return SERVER_ADDRESS + (ADMIN.equals("Chip") ? "MySqlFetchEvent.php" : "FetchEventData.php");
   }

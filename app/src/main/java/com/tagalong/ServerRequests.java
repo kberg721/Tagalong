@@ -44,6 +44,11 @@ public class ServerRequests extends Admins {
 		progressDialog.show();
 		new StoreEventDataAsyncTask(event, callback).execute();
 	}
+
+  public void storeInviteeDataInBackground(User host, Friend invitee, GetInviteeCallback callback, EventResponse isAttending) {
+    progressDialog.show();
+    new StoreInviteeDataAsyncTask(host, invitee, callback, isAttending);
+  }
 	
 	public void fetchUserDataAsyncTask(User user, GetUserCallback callback) {
 		//progressDialog.show();
@@ -93,6 +98,51 @@ public class ServerRequests extends Admins {
 			userCallback.done(null);
 			super.onPostExecute(aVoid);
 			
+		}
+	}
+
+	public class StoreInviteeDataAsyncTask extends AsyncTask<Void, Void, Void> {
+		User host;
+		Friend invitee;
+		GetInviteeCallback inviteeCallback;
+		EventResponse isAttending;
+
+		public StoreInviteeDataAsyncTask(User host, Friend invitee, GetInviteeCallback inviteeCallback, EventResponse isAttending) {
+			this.host = host;
+			this.invitee = invitee;
+			this.inviteeCallback = inviteeCallback;
+			this.isAttending = isAttending;
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			ArrayList<NameValuePair> dataToSend = new ArrayList<>();
+			dataToSend.add(new BasicNameValuePair("hostEmail", host.email));
+			dataToSend.add(new BasicNameValuePair("hostEventCount", Integer.toString(host.eventCount)));
+			dataToSend.add(new BasicNameValuePair("friendName", invitee.getName()));
+			dataToSend.add(new BasicNameValuePair("friendEmail", invitee.getEmail()));
+			dataToSend.add(new BasicNameValuePair("isAttending", Integer.toString(isAttending ? 1 : 0)));
+
+      HttpParams httpRequestParam = new BasicHttpParams();
+      HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);
+      HttpConnectionParams.setSoTimeout(httpRequestParam, CONNECTION_TIMEOUT);
+
+      HttpClient client = new DefaultHttpClient(httpRequestParam);
+      HttpPost post = new HttpPost(getSubmitInviteeFile());
+
+      try {
+        post.setEntity(new UrlEncodedFormEntity(dataToSend));
+        client.execute(post);
+      } catch(Exception e) {
+        e.printStackTrace();
+      }
+      return null;
+    }
+
+		protected void onPostExecute(Void aVoid) {
+			progressDialog.dismiss();
+			inviteeCallback.done(null);
+			super.onPostExecute(aVoid);
 		}
 	}
 
