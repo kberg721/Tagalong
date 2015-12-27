@@ -78,7 +78,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     facebookLogin = LoginManager.getInstance();
     userLocalStore = new UserLocalStore(this);
     friendsList = (ArrayList<Friend>) currentIntent.getSerializableExtra("friendsList");
-    System.out.println("friend list: " + friendsList);
+    dropdownListAdapter = new DropdownListAdapter(this, friendsList, (TextView) findViewById(R.id.selectedValues));
 
     eventTime = new TagalongDate();
     btnCreateEvent = (Button) findViewById(R.id.submitNewEvent);
@@ -251,7 +251,6 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
         String hostEmail = currentUser.email;
         int eventCount = currentUser.eventCount + 1;
         User user = new User(currentUser.fullName, currentUser.email, currentUser.password, eventCount);
-        storeUserData(user);
         ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
         String eventName = new_event_name.getText().toString();
         String eventLocation = mAutocompleteView.getText().toString();
@@ -260,6 +259,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
           messageResId = R.string.missing_event_field;
         }
         if(messageResId == 0) {
+          updateUserData(user);
           addInvitees(invitedFriends, currentUser);
           Event event = new Event(hostEmail, eventCount, eventName, eventLocation, eventTime.toString(), eventDescription);
           submitEvent(event);
@@ -330,6 +330,10 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
       @Override
       public void done(User returnedUser){ finish(); }
     });
+  }
+
+  private void updateUserData(User user) {
+    // TODO: delete old record and insert new one
   }
 
   @Override

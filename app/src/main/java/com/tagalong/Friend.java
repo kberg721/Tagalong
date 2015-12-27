@@ -38,6 +38,7 @@ public class Friend implements Parcelable {
 
   protected Friend(Parcel in) {
     name = in.readString();
+    // May need to change this to read the string and find out if it is an email or an id
     id = in.readString();
     email = in.readString();
     boolean[] selectedArray = new boolean[1];

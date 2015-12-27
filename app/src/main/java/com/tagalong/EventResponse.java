@@ -9,4 +9,9 @@ public enum EventResponse {
   private EventResponse(int value) {
     this.value = value;
   }
+
+  @Override
+  public String toString() {
+    return Integer.toString(value);
+  }
 }

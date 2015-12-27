@@ -121,7 +121,7 @@ public class ServerRequests extends Admins {
 			dataToSend.add(new BasicNameValuePair("hostEventCount", Integer.toString(host.eventCount)));
 			dataToSend.add(new BasicNameValuePair("friendName", invitee.getName()));
 			dataToSend.add(new BasicNameValuePair("friendEmail", invitee.getEmail()));
-			dataToSend.add(new BasicNameValuePair("isAttending", Integer.toString(isAttending ? 1 : 0)));
+			dataToSend.add(new BasicNameValuePair("isAttending", isAttending.toString()));
 
       HttpParams httpRequestParam = new BasicHttpParams();
       HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);

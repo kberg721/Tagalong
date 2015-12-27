@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -20,7 +21,12 @@ public class FriendsArrayList implements Parcelable {
       friendObjects = new ArrayList<Friend>();
       for(int i=0; i<jsonArray.length(); i++) {
         JSONObject friendObj = jsonArray.getJSONObject(i);
-        Friend friend = new Friend(friendObj.getString("name"), friendObj.getString("id"));
+        Friend friend;
+        try {
+          friend = new Friend(friendObj.getString("name"), friendObj.getString("id"), "");
+        } catch (JSONException e) {
+          friend = new Friend(friendObj.getString("name"), "", friendObj.getString("email"));
+        }
         friendObjects.add(friend);
       }
     } catch (org.json.JSONException e) {
