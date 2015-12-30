@@ -40,6 +40,11 @@ public class ServerRequests extends Admins {
 		new StoreUserDataAsyncTask(user, callback).execute();
 	}
 
+	public void updateUserEventCountInBackground(User user, GetUserCallback callback) {
+		progressDialog.show();
+		new UpdateUserEventCountAsyncTask(user, callback).execute();
+	}
+
 	public void storeEventDataInBackground(Event event, GetEventCallback callback) {
 		progressDialog.show();
 		new StoreEventDataAsyncTask(event, callback).execute();
@@ -75,6 +80,7 @@ public class ServerRequests extends Admins {
 			dataToSend.add(new BasicNameValuePair("name", user.fullName));
 			dataToSend.add(new BasicNameValuePair("email", user.email));
 			dataToSend.add(new BasicNameValuePair("password", user.password));
+			dataToSend.add(new BasicNameValuePair("eventCount", Integer.toString(user.eventCount)));
 			
 			HttpParams httpRequestParam = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);
@@ -98,6 +104,40 @@ public class ServerRequests extends Admins {
 			userCallback.done(null);
 			super.onPostExecute(aVoid);
 			
+		}
+	}
+
+	public class UpdateUserEventCountAsyncTask extends AsyncTask<Void, Void, Void> {
+		User user;
+		GetUserCallback userCallback;
+
+		public UpdateUserEventCountAsyncTask(User user, GetUserCallback callBack) {
+			this.user = user;
+			this.userCallback = callBack;
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			ArrayList<NameValuePair> dataToSend = new ArrayList<>();
+			dataToSend.add(new BasicNameValuePair("name", user.fullName));
+			dataToSend.add(new BasicNameValuePair("email", user.email));
+			dataToSend.add(new BasicNameValuePair("password", user.password));
+			dataToSend.add(new BasicNameValuePair("eventCount", Integer.toString(user.eventCount)));
+
+			HttpParams httpRequestParam = new BasicHttpParams();
+			HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);
+			HttpConnectionParams.setSoTimeout(httpRequestParam, CONNECTION_TIMEOUT);
+
+			HttpClient client = new DefaultHttpClient(httpRequestParam);
+			HttpPost post = new HttpPost(getUpdateEventFile());
+
+			try {
+				post.setEntity(new UrlEncodedFormEntity(dataToSend));
+				client.execute(post);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			return null;
 		}
 	}
 
@@ -232,9 +272,9 @@ public class ServerRequests extends Admins {
 					String name = jObject.getString("name");
 
 					if(isFBUser != null) {
-						returnedUser = new User(name, user.email, "");
+						returnedUser = new User(user.fullName, user.email, "");
 					} else {
-						returnedUser = new User(name, user.email, user.password);
+						returnedUser = new User(name == null ? user.fullName : name, user.email, user.password);
 					}
 				}
 				

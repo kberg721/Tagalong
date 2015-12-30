@@ -20,6 +20,11 @@ public class Admins {
       "FetchUserData.php");
   }
 
+  protected String getUpdateEventFile() {
+    return SERVER_ADDRESS + (ADMIN.equals("Chip") ? "MySqlUpdateEventCount.php" :
+      "UpdateEventCount.php");
+  }
+
   protected String getSubmitEventFile() {
     return SERVER_ADDRESS + (ADMIN.equals("Chip") ? "MySqlSubmitEvent.php" : "SubmitEvent.php");
   }

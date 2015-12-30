@@ -333,7 +333,11 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   }
 
   private void updateUserData(User user) {
-    // TODO: delete old record and insert new one
+    ServerRequests serverRequest = new ServerRequests(this);
+    serverRequest.updateUserEventCountInBackground(user, new GetUserCallback() {
+      @Override
+      public void done(User returnedUser){ finish(); }
+    });
   }
 
   @Override
