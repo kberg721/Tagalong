@@ -1,6 +1,5 @@
 <?php
-  $con = mysqli_connect("localhost", "cpf5193_admin", "Cpf1092281!",
-  "cpf5193_tagalong");
+  $con = mysqli_connect("localhost", "cpf5193_admin", "Cpf1092281!", "cpf5193_tagalong");
 
   if (mysqli_connect_errno()) {
     echo "Failed to connect to MySQL: " . mysqli_connect_error();

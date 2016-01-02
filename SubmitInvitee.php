@@ -1,5 +1,5 @@
 <?php
-  $con = mysqli_connect("localhost", "cpf5193_admin", "Cpf1092281!", "cpf5193_tagalong");
+  $con = mysqli_connect("mysql15.000webhost.com", "a4232919_kberg72", "Darkside721", "a4232919_User");
   $hostEmail = $_POST["hostEmail"];
   $hostEventCount = $_POST["hostEventCount"];
   $friendName = $_POST["friendName"];
