@@ -23,5 +23,5 @@
 	mysqli_stmt_execute($statement);
 	mysqli_stmt_close($statement);
 
-	msqli_close($con);
+	mysqli_close($con);
 ?>

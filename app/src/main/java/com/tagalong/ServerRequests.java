@@ -52,7 +52,7 @@ public class ServerRequests extends Admins {
 
   public void storeInviteeDataInBackground(User host, Friend invitee, GetInviteeCallback callback, EventResponse isAttending) {
     progressDialog.show();
-    new StoreInviteeDataAsyncTask(host, invitee, callback, isAttending);
+    new StoreInviteeDataAsyncTask(host, invitee, callback, isAttending).execute();
   }
 	
 	public void fetchUserDataAsyncTask(User user, GetUserCallback callback) {
@@ -161,7 +161,8 @@ public class ServerRequests extends Admins {
 			dataToSend.add(new BasicNameValuePair("hostEventCount", Integer.toString(host.eventCount)));
 			dataToSend.add(new BasicNameValuePair("friendName", invitee.getName()));
 			dataToSend.add(new BasicNameValuePair("friendEmail", invitee.getEmail()));
-			dataToSend.add(new BasicNameValuePair("isAttending", isAttending.toString()));
+      dataToSend.add(new BasicNameValuePair("friendFBId", invitee.getId()));
+      dataToSend.add(new BasicNameValuePair("isAttending", isAttending.toString()));
 
       HttpParams httpRequestParam = new BasicHttpParams();
       HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);
@@ -204,7 +205,6 @@ public class ServerRequests extends Admins {
 			dataToSend.add(new BasicNameValuePair("location", event.eventLocation));
 			dataToSend.add(new BasicNameValuePair("time", event.eventTime));
 			dataToSend.add(new BasicNameValuePair("description", event.eventDescription));
-			//dataToSend.add(new BasicNameValuePair("eventGuestlist", event.guestList));
 
 
 			HttpParams httpRequestParam = new BasicHttpParams();
