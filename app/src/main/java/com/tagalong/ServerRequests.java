@@ -270,11 +270,13 @@ public class ServerRequests extends Admins {
 					returnedUser = null;
 				} else {
 					String name = jObject.getString("name");
+					int eventCount = Integer.parseInt(jObject.getString("eventCount"));
 
 					if(isFBUser != null) {
-						returnedUser = new User(user.fullName, user.email, "");
+						returnedUser = new User(user.fullName, user.email, "", eventCount);
 					} else {
-						returnedUser = new User(name == null ? user.fullName : name, user.email, user.password);
+						returnedUser = new User(name == null ? user.fullName : name, user.email, user.password,
+              jObject.getString("eventCount") != null ? eventCount : user.eventCount);
 					}
 				}
 				

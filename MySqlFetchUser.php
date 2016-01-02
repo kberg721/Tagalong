@@ -9,13 +9,14 @@
 
 	$password = mysqli_real_escape_string($con, $_POST["password"]);
 	$email = mysqli_real_escape_string($con, $_POST["email"]);
+	$eventCount = mysqli_real_escape_string($con, $_POST["eventCount"]);
 
 	$statement = mysqli_prepare($con, "SELECT * FROM User WHERE email = ? AND password = ?");
 	mysqli_stmt_bind_param($statement, "ss", $email, $password);
 	mysqli_stmt_execute($statement);
 
 	mysqli_stmt_store_result($statement);
-	mysqli_stmt_bind_result($statement, $email, $name, $password);
+	mysqli_stmt_bind_result($statement, $email, $name, $password, $eventCount);
 
 	$user = array();
 
@@ -23,6 +24,7 @@
 		$user[email] = $email;
 		$user[name] = $name;
 		$user[password] = $password;
+		$user[eventCount] = $eventCount;
 	}
 	
 	if (count($user) == 0) {

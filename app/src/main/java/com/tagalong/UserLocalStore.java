@@ -16,6 +16,7 @@ public class UserLocalStore {
 		spEditor.putString("name", user.fullName);
 		spEditor.putString("password", user.password);
 		spEditor.putString("email", user.email);
+		spEditor.putString("eventCount", Integer.toString(user.eventCount));
 		spEditor.commit();
 	}
 	

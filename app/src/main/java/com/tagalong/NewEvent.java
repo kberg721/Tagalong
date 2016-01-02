@@ -319,8 +319,8 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
 
   //Determines whether the event time has been set
   public boolean isTimeSet() {
-    return !(eventTime.getmDay() == 0 || eventTime.getmMonth() == 0 || eventTime.getmYear() == 0 ||
-      eventTime.getmHour() == 0 || eventTime.getmMinute() == 0);
+    return !(eventTime.getmDay() == 0 && eventTime.getmMonth() == 0 && eventTime.getmYear() == 0 &&
+      eventTime.getmHour() == 0 && eventTime.getmMinute() == 0);
   }
 
   // TODO: move this from NewEvent and RegisterActivity to a common file

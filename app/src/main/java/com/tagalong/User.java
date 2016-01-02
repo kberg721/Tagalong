@@ -16,6 +16,10 @@ public class User {
 		this("", email, password, eventCount);
 	}
 
+	public int getEventCount () {
+		return eventCount;
+	}
+
 	public User(String fullName, String email, String password, int eventCount) {
 		this.fullName = fullName;
 		this.email = email;
