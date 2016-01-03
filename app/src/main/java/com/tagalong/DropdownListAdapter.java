@@ -56,6 +56,13 @@ public class DropdownListAdapter extends BaseAdapter {
     return selectedFriends;
   }
 
+  public void clearSelectedFriends() {
+    mListItems = new ArrayList<Friend>();
+    selectedCount = 0;
+    selected = "";
+    firstSelected = "";
+  }
+
   @Override
   public int getCount() {
     return mListItems.size();
