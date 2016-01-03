@@ -279,6 +279,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
       serverRequest.storeInviteeDataInBackground(host, invitee, new GetInviteeCallback() {
         @Override
         public void done(Object o) {
+          dropdownListAdapter.clearSelectedFriends();
           finish();
         }
       }, EventResponse.NO_RESPONSE);
