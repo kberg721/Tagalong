@@ -76,21 +76,39 @@
           android:text="@string/event_location"
           android:textColor="#372c24" />
 
-        <AutoCompleteTextView
-          android:id="@+id/autocomplete_places"
+        <fragment
+          android:id="@+id/place_autocomplete_fragment"
           android:layout_height="35dp"
           android:layout_marginLeft="15dp"
           android:layout_marginTop="15dp"
           android:layout_marginBottom="15dp"
           android:layout_marginRight="15dp"
           android:layout_centerVertical="true"
-          android:layout_width="match_parent"
-          android:layout_weight="3"
+          android:hint="Pick a Place!"
           android:ellipsize="start"
           android:gravity="center"
-          android:hint="Event Location"
-          android:inputType="text"
-          android:background="@drawable/edit_text" />
+          android:layout_width="match_parent"
+          android:background="@drawable/edit_text"
+          android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+          tools:layout="@layout/notification_template_part_chronometer"/>
+
+        <!--
+          <AutoCompleteTextView
+            android:id="@+id/autocomplete_places"
+            android:layout_height="35dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_centerVertical="true"
+            android:layout_width="match_parent"
+            android:layout_weight="3"
+            android:ellipsize="start"
+            android:gravity="center"
+            android:hint="Event Location"
+            android:inputType="text"
+            android:background="@drawable/edit_text" />
+         -->
 
         <TextView
           android:id="@+id/eventDate"

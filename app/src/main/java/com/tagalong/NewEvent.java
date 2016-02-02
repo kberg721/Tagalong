@@ -13,8 +13,6 @@ import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -26,14 +24,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
-import com.google.android.gms.location.places.Places;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.tagalong.fragments.DatePickerFragment;
 import com.tagalong.fragments.TimePickerFragment;
 
@@ -54,12 +50,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   private DropdownListAdapter dropdownListAdapter;
 
   //Used for Event Location
-  private AutoCompleteTextView mAutocompleteView;
-  private GoogleApiClient mGoogleApiClient;
-  private PlaceAutoCompleteAdapter mAdapter;
-  private static final LatLngBounds BOUNDS_GREATER_SEATTLE = new LatLngBounds(
-    new LatLng(47.498833, -122.381676), new LatLng(47.782455, -122.243813));
-  Button btnCreateEvent;
+  private PlaceAutocompleteFragment mAutoCompleteFragment;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +67,8 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     System.out.println("friend list: " + friendsList);
 
     eventTime = new TagalongDate();
-    btnCreateEvent = (Button) findViewById(R.id.submitNewEvent);
+    mAutoCompleteFragment = (PlaceAutocompleteFragment)
+      getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
     new_event_name = (EditText) findViewById(R.id.new_event_name);
 
     //onClickListener to initiate the dropDown list
@@ -87,16 +79,14 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
       }
     });
     //Event Location
-    mAutocompleteView = (AutoCompleteTextView) findViewById(R.id.autocomplete_places);
-    mGoogleApiClient = new GoogleApiClient
-      .Builder(this)
-      .addApi(Places.GEO_DATA_API)
-      .addOnConnectionFailedListener(this)
-      .build();
-    mAdapter = new PlaceAutoCompleteAdapter(this, mGoogleApiClient, BOUNDS_GREATER_SEATTLE,
-      null);
-    mAutocompleteView.setAdapter(mAdapter);
-    mAutocompleteView.setOnItemClickListener(mAutocompleteClickListener);
+    mAutoCompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+        @Override
+        public void onPlaceSelected(Place place) { // Handle the selected Place
+        }
+        @Override
+        public void onError(Status status) { // Handle the error
+        }
+    });
 
     eventTime = new TagalongDate();
     eventDate = (TextView)findViewById(R.id.eventDate);
@@ -208,41 +198,15 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   @Override
   protected void onStart() {
     super.onStart();
-    mGoogleApiClient.connect();
+    //mGoogleApiClient.connect();
   }
 
   @Override
   protected void onStop() {
-    mGoogleApiClient.disconnect();
+    //mGoogleApiClient.disconnect();
     super.onStop();
   }
 
-  private AdapterView.OnItemClickListener mAutocompleteClickListener
-    = new AdapterView.OnItemClickListener() {
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            /*
-             Retrieve the place ID of the selected item from the Adapter.
-             The adapter stores each Place suggestion in a AutocompletePrediction from which we
-             read the place ID and title.
-            */
-      final AutocompletePrediction item = mAdapter.getItem(position);
-      final String placeId = item.getPlaceId();
-      final CharSequence primaryText = item.getPrimaryText(null);
-
-      Log.i(TAG, "Autocomplete item selected: " + primaryText);
-
-            /*
-             Issue a request to the Places Geo Data API to retrieve a Place object with additional
-             details about the place.
-              */
-      PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi
-        .getPlaceById(mGoogleApiClient, placeId);
-      placeResult.setResultCallback(mUpdatePlaceDetailsCallback);
-
-      Log.i(TAG, "Called getPlaceById to get Place details for " + placeId);
-    }
-  };
 
   private ResultCallback<PlaceBuffer> mUpdatePlaceDetailsCallback
     = new ResultCallback<PlaceBuffer>() {
@@ -287,8 +251,10 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
         int messageResId = 0; //will be used to make toast
         ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
         String eventName = new_event_name.getText().toString();
-        String eventLocation = mAutocompleteView.getText().toString();
-        if(invitedFriends.size() == 0 || eventName == "" || eventLocation == "" || !isEventTimeSet()) {
+        //String eventLocation = mAutocompleteView.getText().toString();
+        if(invitedFriends.size() == 0 || eventName == ""
+          //|| eventLocation == ""
+          || !isEventTimeSet()) {
           messageResId = R.string.missing_event_field;
         }
         if(messageResId == 0) {
@@ -298,7 +264,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
           Intent currentIntent = this.getIntent();
           String hostEmail = currentIntent.getStringExtra("currentUserEmail");
           int hostEventCounter = currentIntent.getIntExtra("currentUserEventCount", 0);
-          Event event = new Event(eventName, eventLocation, eventTime.toString(), "", hostEmail, hostEventCounter);
+          Event event = new Event(eventName, null, eventTime.toString(), "", hostEmail, hostEventCounter);
           submitEvent(event);
         } else {
           Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
