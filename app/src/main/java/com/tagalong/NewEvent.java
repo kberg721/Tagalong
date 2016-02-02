@@ -41,6 +41,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
 
   private static final String TAG = "Tagalong";
   private EditText new_event_name;
+  private CharSequence eventLocation;
   private TagalongDate eventTime;
   private TextView eventDate;
   private Button submitNewEvent;
@@ -81,7 +82,9 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     //Event Location
     mAutoCompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
         @Override
-        public void onPlaceSelected(Place place) { // Handle the selected Place
+        public void onPlaceSelected(Place place) {
+          // Handle the selected Place
+          eventLocation = place.getAddress();
         }
         @Override
         public void onError(Status status) { // Handle the error
@@ -177,7 +180,9 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
     int notMilitaryTime = eventTime.getmHour() % 12;
     String amOrPm = (notMilitaryTime != 0) ? "pm" : "am";
     if (notMilitaryTime == 0){notMilitaryTime = 12;}
-    eventDate.setText("Time: " + notMilitaryTime + ":" + eventTime.getmMinute() +
+    String minutes = eventTime.getmMinute() + "";
+    if(minutes.equals("0")){ minutes += 0; }
+    eventDate.setText("Time: " + notMilitaryTime + ":" + minutes +
       amOrPm + " on " + eventTime.getmMonth() + "/" + eventTime.getmDay() +
       "/" + eventTime.getmYear());
   }
@@ -198,12 +203,10 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
   @Override
   protected void onStart() {
     super.onStart();
-    //mGoogleApiClient.connect();
   }
 
   @Override
   protected void onStop() {
-    //mGoogleApiClient.disconnect();
     super.onStop();
   }
 
@@ -252,9 +255,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
         ArrayList<Friend> invitedFriends = dropdownListAdapter.getSelectedFriends();
         String eventName = new_event_name.getText().toString();
         //String eventLocation = mAutocompleteView.getText().toString();
-        if(invitedFriends.size() == 0 || eventName == ""
-          //|| eventLocation == ""
-          || !isEventTimeSet()) {
+        if(invitedFriends.size() == 0 || eventName == "" || eventLocation == null || !isEventTimeSet()) {
           messageResId = R.string.missing_event_field;
         }
         if(messageResId == 0) {
