@@ -81,6 +81,7 @@ public class ServerRequests extends Admins {
 			dataToSend.add(new BasicNameValuePair("email", user.email));
 			dataToSend.add(new BasicNameValuePair("password", user.password));
 			dataToSend.add(new BasicNameValuePair("eventCount", Integer.toString(user.eventCount)));
+
 			
 			HttpParams httpRequestParam = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);
@@ -199,13 +200,12 @@ public class ServerRequests extends Admins {
 		@Override
 		protected Void doInBackground(Void... params) {
 			ArrayList<NameValuePair> dataToSend = new ArrayList<>();
-      dataToSend.add(new BasicNameValuePair("hostEmail", event.hostEmail));
-      dataToSend.add(new BasicNameValuePair("hostEventCount", Integer.toString(event.hostEventCount)));
-			dataToSend.add(new BasicNameValuePair("name", event.eventName));
-			dataToSend.add(new BasicNameValuePair("location", event.eventLocation));
+      		dataToSend.add(new BasicNameValuePair("hostEmail", event.hostEmail));
+      		dataToSend.add(new BasicNameValuePair("hostEventCount", Integer.toString(event.hostEventCount)));
+	  		dataToSend.add(new BasicNameValuePair("name", event.eventName));
+	  		dataToSend.add(new BasicNameValuePair("location", event.eventLocation));
 			dataToSend.add(new BasicNameValuePair("time", event.eventTime));
 			dataToSend.add(new BasicNameValuePair("description", event.eventDescription));
-
 
 			HttpParams httpRequestParam = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);
@@ -244,10 +244,10 @@ public class ServerRequests extends Admins {
 		@Override
 		protected User doInBackground(Void... params) {
 			ArrayList<NameValuePair> dataToSend = new ArrayList<>();
-			dataToSend.add(new BasicNameValuePair("email", user.email));
+			dataToSend.add(new BasicNameValuePair("email", user.getEmail()));
 			AccessToken isFBUser = AccessToken.getCurrentAccessToken();
 			if(isFBUser == null) {
-				dataToSend.add(new BasicNameValuePair("password", user.password));
+				dataToSend.add(new BasicNameValuePair("password", user.getPassword()));
 			}
 			
 			HttpParams httpRequestParam = new BasicHttpParams();
@@ -330,7 +330,7 @@ public class ServerRequests extends Admins {
 				JSONObject jObject = new JSONObject(result);
 
 				if(jObject.length() == 0) {
-					event = null;
+					returnedEvent = null;
 				} else {
 					String name = jObject.getString("name");
 					returnedEvent = new Event(event.hostEmail, event.hostEventCount, name, event.eventLocation, event.eventTime, event.eventDescription);

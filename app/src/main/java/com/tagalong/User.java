@@ -10,6 +10,7 @@ public class User {
 	
 	public User(String email, String password) {
 		this("", email, password, 0);
+
 	}
 
 	public User(String email, String password, int eventCount) {

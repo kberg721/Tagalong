@@ -12,6 +12,7 @@ public class Friend implements Parcelable {
   private String id;
   private String email;
   private boolean selected;
+  private String email;
 
   public Friend(String name, String id, String email) {
     this.name = name;
