@@ -1,27 +1,36 @@
 <?php
-	$con = mysqli_connect("mysql15.000webhost.com", "a4232919_kberg72", "Darkside721", "a4232919_User");
+  $con = mysqli_connect("mysql15.000webhost.com", "a4232919_kberg72", "Darkside721", "a4232919_User");
 
-	$password = $_POST["password"];
-	$email = $_POST["email"];
+  if (mysqli_connect_errno()) {
+    echo "Failed to connect to MySQL: " . mysqli_connect_error();
+  }
 
-	$statement = mysqli_prepare($con, "SELECT * FROM User WHERE email = ? AND password = ?");
-	mysqli_stmt_bind_param($statement, "ss", $email, $password);
-	mysqli_stmt_execute($statement);
+  $password = mysqli_real_escape_string($con, $_POST["password"]);
+  $email = mysqli_real_escape_string($con, $_POST["email"]);
+  $eventCount = mysqli_real_escape_string($con, $_POST["eventCount"]);
 
-	mysqli_stmt_store_result($statement);
-	mysqli_stmt_bind_result($statement, $email, $name, $password);
+  $statement = mysqli_prepare($con, "SELECT * FROM User WHERE email = ? AND password = ?");
+  mysqli_stmt_bind_param($statement, "ss", $email, $password);
+  mysqli_stmt_execute($statement);
 
-	$user = array();
+  mysqli_stmt_store_result($statement);
+  mysqli_stmt_bind_result($statement, $email, $name, $password, $eventCount);
 
-	while(mysqli_stmt_fetch($statement)) {
-		$user[email] = $email;
-		$user[name] = $name;
-		$user[password] = $password;
-	}
+  $user = array();
 
-	echo json_encode($user);
+  while(mysqli_stmt_fetch($statement)) {
+	$user[email] = $email;
+	$user[name] = $name;
+	$user[password] = $password;
+	$user[eventCount] = $eventCount;
+  }
 
-	mysqli_stmt_close($statement);
+  if (count($user) == 0) {
+	echo json_encode (new stdClass);
+  } else {
+    echo json_encode($user);
+  }
 
-	msqli_close($con);
+  mysqli_stmt_close($statement);
+  mysqli_close($con);
 ?>

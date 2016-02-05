@@ -40,10 +40,20 @@ public class ServerRequests extends Admins {
 		new StoreUserDataAsyncTask(user, callback).execute();
 	}
 
+	public void updateUserEventCountInBackground(User user, GetUserCallback callback) {
+		progressDialog.show();
+		new UpdateUserEventCountAsyncTask(user, callback).execute();
+	}
+
 	public void storeEventDataInBackground(Event event, GetEventCallback callback) {
 		progressDialog.show();
 		new StoreEventDataAsyncTask(event, callback).execute();
 	}
+
+  public void storeInviteeDataInBackground(User host, Friend invitee, GetInviteeCallback callback, EventResponse isAttending) {
+    progressDialog.show();
+    new StoreInviteeDataAsyncTask(host, invitee, callback, isAttending).execute();
+  }
 	
 	public void fetchUserDataAsyncTask(User user, GetUserCallback callback) {
 		//progressDialog.show();
@@ -70,6 +80,8 @@ public class ServerRequests extends Admins {
 			dataToSend.add(new BasicNameValuePair("name", user.fullName));
 			dataToSend.add(new BasicNameValuePair("email", user.email));
 			dataToSend.add(new BasicNameValuePair("password", user.password));
+			dataToSend.add(new BasicNameValuePair("eventCount", Integer.toString(user.eventCount)));
+
 			
 			HttpParams httpRequestParam = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);
@@ -96,6 +108,86 @@ public class ServerRequests extends Admins {
 		}
 	}
 
+	public class UpdateUserEventCountAsyncTask extends AsyncTask<Void, Void, Void> {
+		User user;
+		GetUserCallback userCallback;
+
+		public UpdateUserEventCountAsyncTask(User user, GetUserCallback callBack) {
+			this.user = user;
+			this.userCallback = callBack;
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			ArrayList<NameValuePair> dataToSend = new ArrayList<>();
+			dataToSend.add(new BasicNameValuePair("name", user.fullName));
+			dataToSend.add(new BasicNameValuePair("email", user.email));
+			dataToSend.add(new BasicNameValuePair("password", user.password));
+			dataToSend.add(new BasicNameValuePair("eventCount", Integer.toString(user.eventCount)));
+
+			HttpParams httpRequestParam = new BasicHttpParams();
+			HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);
+			HttpConnectionParams.setSoTimeout(httpRequestParam, CONNECTION_TIMEOUT);
+
+			HttpClient client = new DefaultHttpClient(httpRequestParam);
+			HttpPost post = new HttpPost(getUpdateEventFile());
+
+			try {
+				post.setEntity(new UrlEncodedFormEntity(dataToSend));
+				client.execute(post);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+	}
+
+	public class StoreInviteeDataAsyncTask extends AsyncTask<Void, Void, Void> {
+		User host;
+		Friend invitee;
+		GetInviteeCallback inviteeCallback;
+		EventResponse isAttending;
+
+		public StoreInviteeDataAsyncTask(User host, Friend invitee, GetInviteeCallback inviteeCallback, EventResponse isAttending) {
+			this.host = host;
+			this.invitee = invitee;
+			this.inviteeCallback = inviteeCallback;
+			this.isAttending = isAttending;
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			ArrayList<NameValuePair> dataToSend = new ArrayList<>();
+			dataToSend.add(new BasicNameValuePair("hostEmail", host.email));
+			dataToSend.add(new BasicNameValuePair("hostEventCount", Integer.toString(host.eventCount)));
+			dataToSend.add(new BasicNameValuePair("friendName", invitee.getName()));
+			dataToSend.add(new BasicNameValuePair("friendEmail", invitee.getEmail()));
+      dataToSend.add(new BasicNameValuePair("friendFBId", invitee.getId()));
+      dataToSend.add(new BasicNameValuePair("isAttending", isAttending.toString()));
+
+      HttpParams httpRequestParam = new BasicHttpParams();
+      HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);
+      HttpConnectionParams.setSoTimeout(httpRequestParam, CONNECTION_TIMEOUT);
+
+      HttpClient client = new DefaultHttpClient(httpRequestParam);
+      HttpPost post = new HttpPost(getSubmitInviteeFile());
+
+      try {
+        post.setEntity(new UrlEncodedFormEntity(dataToSend));
+        client.execute(post);
+      } catch(Exception e) {
+        e.printStackTrace();
+      }
+      return null;
+    }
+
+		protected void onPostExecute(Void aVoid) {
+			progressDialog.dismiss();
+			inviteeCallback.done(null);
+			super.onPostExecute(aVoid);
+		}
+	}
+
 	public class StoreEventDataAsyncTask extends AsyncTask<Void, Void, Void> {
 		Event event;
 		GetEventCallback eventCallback;
@@ -108,11 +200,12 @@ public class ServerRequests extends Admins {
 		@Override
 		protected Void doInBackground(Void... params) {
 			ArrayList<NameValuePair> dataToSend = new ArrayList<>();
-			dataToSend.add(new BasicNameValuePair("eventName", event.eventName));
-			dataToSend.add(new BasicNameValuePair("eventLocation", event.eventLocation));
-			dataToSend.add(new BasicNameValuePair("eventTime", event.eventTime));
-			dataToSend.add(new BasicNameValuePair("eventGuestlist", event.guestList));
-
+      		dataToSend.add(new BasicNameValuePair("hostEmail", event.hostEmail));
+      		dataToSend.add(new BasicNameValuePair("hostEventCount", Integer.toString(event.hostEventCount)));
+	  		dataToSend.add(new BasicNameValuePair("name", event.eventName));
+	  		dataToSend.add(new BasicNameValuePair("location", event.eventLocation));
+			dataToSend.add(new BasicNameValuePair("time", event.eventTime));
+			dataToSend.add(new BasicNameValuePair("description", event.eventDescription));
 
 			HttpParams httpRequestParam = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);
@@ -151,10 +244,10 @@ public class ServerRequests extends Admins {
 		@Override
 		protected User doInBackground(Void... params) {
 			ArrayList<NameValuePair> dataToSend = new ArrayList<>();
-			dataToSend.add(new BasicNameValuePair("email", user.email));
+			dataToSend.add(new BasicNameValuePair("email", user.getEmail()));
 			AccessToken isFBUser = AccessToken.getCurrentAccessToken();
 			if(isFBUser == null) {
-				dataToSend.add(new BasicNameValuePair("password", user.password));
+				dataToSend.add(new BasicNameValuePair("password", user.getPassword()));
 			}
 			
 			HttpParams httpRequestParam = new BasicHttpParams();
@@ -177,11 +270,13 @@ public class ServerRequests extends Admins {
 					returnedUser = null;
 				} else {
 					String name = jObject.getString("name");
+					int eventCount = Integer.parseInt(jObject.getString("eventCount"));
 
 					if(isFBUser != null) {
-						returnedUser = new User(name, "", user.email);
+						returnedUser = new User(user.fullName, user.email, "", eventCount);
 					} else {
-						returnedUser = new User(name, user.password, user.email);
+						returnedUser = new User(name == null ? user.fullName : name, user.email, user.password,
+              jObject.getString("eventCount") != null ? eventCount : user.eventCount);
 					}
 				}
 				
@@ -211,10 +306,12 @@ public class ServerRequests extends Admins {
 		@Override
 		protected Event doInBackground(Void... params) {
 			ArrayList<NameValuePair> dataToSend = new ArrayList<>();
+			dataToSend.add(new BasicNameValuePair("hostEmail", event.hostEmail));
+			dataToSend.add(new BasicNameValuePair("hostEventCount", Integer.toString(event.hostEventCount)));
 			dataToSend.add(new BasicNameValuePair("eventName", event.eventName));
 			dataToSend.add(new BasicNameValuePair("eventLocation", event.eventLocation));
 			dataToSend.add(new BasicNameValuePair("eventTime", event.eventTime));
-			dataToSend.add(new BasicNameValuePair("eventGuestlist", event.guestList));
+			dataToSend.add(new BasicNameValuePair("eventGuestlist", event.eventDescription));
 
 			HttpParams httpRequestParam = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(httpRequestParam, CONNECTION_TIMEOUT);
@@ -233,11 +330,10 @@ public class ServerRequests extends Admins {
 				JSONObject jObject = new JSONObject(result);
 
 				if(jObject.length() == 0) {
-					event = null;
+					returnedEvent = null;
 				} else {
 					String name = jObject.getString("name");
-
-					returnedEvent = new Event(name, event.eventLocation, event.eventTime, event.guestList);
+					returnedEvent = new Event(event.hostEmail, event.hostEventCount, name, event.eventLocation, event.eventTime, event.eventDescription);
 				}
 
 			} catch(Exception e) {

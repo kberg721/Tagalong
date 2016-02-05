@@ -1,0 +1,18 @@
+Event Table:
+  /* DA KEY
+    varchar(50) hostEmail
+    int hostEventCount
+  */
+  varchar(200) name
+  varchar(2000) address
+  varchar(20) date
+  varchar(2000) description
+
+Invited table:
+/* DA PRIMARY KEY
+  varchar(50) hostEmail
+  int hostEventCount
+*/
+  varchar(100) friendName
+  varchar(50) friendEmail
+  boolean isAttending

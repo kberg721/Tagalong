@@ -4,8 +4,8 @@ package com.tagalong;
  * Created by cpf5193 on 9/30/2015.
  */
 public class Admins {
-  //protected static final String ADMIN = "Chip";
-  protected static final String ADMIN = "Kyle";
+  protected static final String ADMIN = "Chip";
+  //protected static final String ADMIN = "Kyle";
 
   protected static final String SERVER_ADDRESS = ADMIN.equals("Chip") ?
     "http://chipfukuhara.com/Tagalong/" :
@@ -20,13 +20,20 @@ public class Admins {
       "FetchUserData.php");
   }
 
+  protected String getUpdateEventFile() {
+    return SERVER_ADDRESS + (ADMIN.equals("Chip") ? "MySqlUpdateEventCount.php" :
+      "UpdateEventCount.php");
+  }
+
   protected String getSubmitEventFile() {
+    return SERVER_ADDRESS + (ADMIN.equals("Chip") ? "MySqlSubmitEvent.php" : "SubmitEvent.php");
+  }
 
-    return SERVER_ADDRESS + "SubmitEvent.php";
-
+  protected String getSubmitInviteeFile() {
+    return SERVER_ADDRESS + (ADMIN.equals("Chip") ? "MySqlSubmitInvitee.php" : "SubmitInvitee.php");
   }
 
   protected String getFetchEventFile() {
-    return SERVER_ADDRESS + "FetchEventData.php";
+    return SERVER_ADDRESS + (ADMIN.equals("Chip") ? "MySqlFetchEvent.php" : "FetchEventData.php");
   }
 }

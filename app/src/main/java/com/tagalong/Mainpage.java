@@ -79,7 +79,7 @@ public class Mainpage extends AppCompatActivity {
 
   private boolean authenticate() {
     AccessToken loggedIntoFB = AccessToken.getCurrentAccessToken();
-    if (userLocalStore.getLoggedInUser().fullName.equals("") && loggedIntoFB == null) {
+    if (userLocalStore.getLoggedInUser().getFullName().equals("") && loggedIntoFB == null) {
       Intent intent = new Intent(this, LoginActivity.class);
       startActivity(intent);
       return false;
@@ -148,6 +148,8 @@ public class Mainpage extends AppCompatActivity {
       return true;
     } else if (id == R.id.action_newActivity) {
       Intent newEventIntent = new Intent(this, NewEvent.class);
+      newEventIntent.putExtra("currentUserEmail", userLocalStore.getLoggedInUser().getEmail());
+      newEventIntent.putExtra("currentUserEventCount", userLocalStore.getLoggedInUser().getEventCounter());
       newEventIntent.putExtra("friendsList", this.friendsList);
       startActivity(newEventIntent);
       return true;

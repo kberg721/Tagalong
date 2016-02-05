@@ -16,6 +16,7 @@ public class UserLocalStore {
 		spEditor.putString("name", user.fullName);
 		spEditor.putString("password", user.password);
 		spEditor.putString("email", user.email);
+		spEditor.putString("eventCount", Integer.toString(user.eventCount));
 		spEditor.commit();
 	}
 	
@@ -23,8 +24,9 @@ public class UserLocalStore {
 		String name = userLocalDB.getString("name", "");
 		String password = userLocalDB.getString("password", "");
 		String email = userLocalDB.getString("email", "");
+		int eventCount = Integer.parseInt(userLocalDB.getString("eventCount", "0"));
 		
-		User storedUser = new User(name, password, email);
+		User storedUser = new User(name, email, password, eventCount);
 		return storedUser;
 	}
 	

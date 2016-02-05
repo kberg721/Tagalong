@@ -48,7 +48,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 				String password = etPassword.getText().toString();
 				String email = etEmail.getText().toString();
 				
-				User user = new User(name, password, email);
+				User user = new User(name, email, password);
 				
 				registerUser(user);
 				break;

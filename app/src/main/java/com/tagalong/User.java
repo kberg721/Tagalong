@@ -1,19 +1,30 @@
 package com.tagalong;
 
 public class User {
-	String fullName, password, email;
-	
-	
-	public User(String fullName, String password, String email) {
-		this.fullName = fullName;
-		this.password = password;
-		this.email = email;
+	String fullName, email, password;
+	int eventCount;
+
+	public User(String fullName, String email, String password) {
+		this(fullName, email, password, 0);
 	}
 	
 	public User(String email, String password) {
-		this.password = password;
-		this.email = email;
-		this.fullName = "";
+		this("", email, password, 0);
+
 	}
 
+	public User(String email, String password, int eventCount) {
+		this("", email, password, eventCount);
+	}
+
+	public int getEventCount () {
+		return eventCount;
+	}
+
+	public User(String fullName, String email, String password, int eventCount) {
+		this.fullName = fullName;
+		this.email = email;
+		this.password = password;
+		this.eventCount = eventCount;
+	}
 }

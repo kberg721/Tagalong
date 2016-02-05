@@ -24,7 +24,7 @@ public class UserLocalStore {
 		String password = userLocalDB.getString("password", "");
 		String email = userLocalDB.getString("email", "");
 		
-		User storedUser = new User(name, password, email);
+		User storedUser = new User(name, email, password);
 		return storedUser;
 	}
 	
