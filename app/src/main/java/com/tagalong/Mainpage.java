@@ -149,7 +149,7 @@ public class Mainpage extends AppCompatActivity {
     } else if (id == R.id.action_newActivity) {
       Intent newEventIntent = new Intent(this, NewEvent.class);
       newEventIntent.putExtra("currentUserEmail", userLocalStore.getLoggedInUser().getEmail());
-      newEventIntent.putExtra("currentUserEventCount", userLocalStore.getLoggedInUser().getEventCounter());
+      newEventIntent.putExtra("currentUserEventCount", userLocalStore.getLoggedInUser().getEventCount());
       newEventIntent.putExtra("friendsList", this.friendsList);
       startActivity(newEventIntent);
       return true;

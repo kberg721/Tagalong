@@ -43,9 +43,7 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
 
   private static final String TAG = "Tagalong";
 
-  private EditText new_event_name;
   private CharSequence eventLocation;
-  private TagalongDate eventTime;
   private TextView eventDate;
   private Button submitNewEvent;
 
@@ -282,9 +280,9 @@ public class NewEvent extends AppCompatActivity implements View.OnClickListener,
            *TODO: get email to friends class
            */
           Intent currentIntent = this.getIntent();
-          String hostEmail = currentIntent.getStringExtra("currentUserEmail");
+          hostEmail = currentIntent.getStringExtra("currentUserEmail");
           int hostEventCounter = currentIntent.getIntExtra("currentUserEventCount", 0);
-          Event event = new Event(eventName, null, eventTime.toString(), "", hostEmail, hostEventCounter);
+          Event event = new Event(hostEmail, hostEventCounter, eventName, eventLocation.toString(), eventTime.toString(), "");
           submitEvent(event);
         } else {
           Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();

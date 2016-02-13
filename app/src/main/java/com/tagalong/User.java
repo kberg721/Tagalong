@@ -10,14 +10,13 @@ public class User {
 	
 	public User(String email, String password) {
 		this("", email, password, 0);
-
 	}
 
 	public User(String email, String password, int eventCount) {
 		this("", email, password, eventCount);
 	}
 
-	public int getEventCount () {
+	public int getEventCount() {
 		return eventCount;
 	}
 
@@ -27,4 +26,17 @@ public class User {
 		this.password = password;
 		this.eventCount = eventCount;
 	}
+
+	public String getFullName() {
+		return this.fullName;
+	}
+
+	public String getEmail() {
+		return this.email;
+	}
+
+	public String getPassword() {
+		return this.password;
+	}
+
 }

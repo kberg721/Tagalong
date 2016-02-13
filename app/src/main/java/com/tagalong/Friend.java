@@ -10,7 +10,6 @@ import android.os.Parcelable;
 public class Friend implements Parcelable {
   private String name;
   private String id;
-  private String email;
   private boolean selected;
   private String email;
 
